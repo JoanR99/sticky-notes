@@ -8,6 +8,7 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import { Box } from '@mui/material';
 import Typography from '@mui/material/Typography';
+import FilterByColor from './FilterByColor';
 
 const LinkItem = styled(Link)`
 	text-decoration: none;
@@ -34,6 +35,8 @@ const SecondaryHeader = () => {
 					>
 						{Noteslocation ? 'My Notes' : 'Archived Notes'}
 					</Typography>
+
+					<FilterByColor />
 
 					<Typography variant="h6" noWrap component="div">
 						{Noteslocation ? (

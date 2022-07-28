@@ -94,6 +94,7 @@ module.exports.updateNote = async (req, res) => {
 	const email = req.user;
 	const { id } = req.params;
 	const { title, content, color: colorName, isArchive } = req.body;
+	console.log(colorName);
 
 	const user = await User.findOne({ where: { email } });
 

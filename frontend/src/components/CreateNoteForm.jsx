@@ -7,12 +7,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-toastify';
 import FormInput from '../components/FormInput';
 import useAddNote from '../hooks/useAddNote';
-import useGetColors from '../hooks/useGetColors';
+import { useQueryClient } from 'react-query';
 import SelectInput from './SelectInput';
 
 const CreateNoteForm = ({ handleClose }) => {
 	const { mutate: addNote, isLoading } = useAddNote();
-	const { colors, isLoading: loading, error } = useGetColors();
+	const queryClient = useQueryClient();
+	const colors = queryClient.getQueryData('colors');
 
 	const noteSchema = object({
 		title: string().optional(),
@@ -66,38 +67,24 @@ const CreateNoteForm = ({ handleClose }) => {
 							focused
 							required
 						/>
-						<FormInput
-							type="text"
-							label="Content"
-							name="content"
-							required
-							focused
-						/>
+						<FormInput type="text" label="Content" name="content" required />
 
-						{!loading && (
-							<SelectInput
-								id="color"
-								name="color"
-								label="color"
-								required
-								focused
-							>
-								{colors?.map((color) => (
-									<MenuItem key={color.id} value={color.name}>
-										<Box
-											component="span"
-											sx={{
-												height: 20,
-												width: 20,
-												backgroundColor: color.hex,
-												mr: 2,
-											}}
-										></Box>
-										{color.name}
-									</MenuItem>
-								))}
-							</SelectInput>
-						)}
+						<SelectInput id="color" name="color" label="color" required focused>
+							{colors?.map((color) => (
+								<MenuItem key={color.id} value={color.name}>
+									<Box
+										component="span"
+										sx={{
+											height: 20,
+											width: 20,
+											backgroundColor: color.hex,
+											mr: 2,
+										}}
+									></Box>
+									{color.name}
+								</MenuItem>
+							))}
+						</SelectInput>
 					</Stack>
 				</Grid>
 
