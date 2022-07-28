@@ -1,6 +1,5 @@
 import { getNotes } from '../services/notes.services';
 import { useQuery } from 'react-query';
-import usePrivateRequest from './usePrivateRequest';
 import { useRequest } from '../context/RequestProvider';
 
 const useGetNotes = () => {

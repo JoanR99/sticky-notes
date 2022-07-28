@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, Grid, Stack, Button } from '@mui/material';
+import { Box, Grid, Stack, Button, MenuItem } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { FormProvider, useForm } from 'react-hook-form';
 import { object, string } from 'zod';
@@ -7,18 +7,23 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-toastify';
 import FormInput from '../components/FormInput';
 import useAddNote from '../hooks/useAddNote';
+import useGetColors from '../hooks/useGetColors';
+import SelectInput from './SelectInput';
 
 const CreateNoteForm = ({ handleClose }) => {
 	const { mutate: addNote, isLoading } = useAddNote();
+	const { colors, isLoading: loading, error } = useGetColors();
 
 	const noteSchema = object({
 		title: string().optional(),
 		content: string().min(1, 'Content is required'),
+		color: string(),
 	});
 
 	const defaultValues = {
 		title: '',
 		content: '',
+		color: 'white',
 	};
 
 	const methods = useForm({
@@ -28,9 +33,9 @@ const CreateNoteForm = ({ handleClose }) => {
 
 	const { reset, handleSubmit } = methods;
 
-	const onHandleSubmit = async ({ title, content }) => {
+	const onHandleSubmit = async ({ title, content, color }) => {
 		await addNote(
-			{ title, content },
+			{ title, content, color },
 			{
 				onSuccess: (data) => {
 					toast.success('Note added successfuly');
@@ -53,7 +58,7 @@ const CreateNoteForm = ({ handleClose }) => {
 				sx={{ mt: 2 }}
 			>
 				<Grid container justifyContent="center">
-					<Stack sx={{ textAlign: 'center', width: '80%' }}>
+					<Stack sx={{ textAlign: 'center', width: '80%', mb: 2 }}>
 						<FormInput
 							label="Title"
 							type="text"
@@ -68,6 +73,31 @@ const CreateNoteForm = ({ handleClose }) => {
 							required
 							focused
 						/>
+
+						{!loading && (
+							<SelectInput
+								id="color"
+								name="color"
+								label="color"
+								required
+								focused
+							>
+								{colors?.map((color) => (
+									<MenuItem key={color.id} value={color.name}>
+										<Box
+											component="span"
+											sx={{
+												height: 20,
+												width: 20,
+												backgroundColor: color.hex,
+												mr: 2,
+											}}
+										></Box>
+										{color.name}
+									</MenuItem>
+								))}
+							</SelectInput>
+						)}
 					</Stack>
 				</Grid>
 

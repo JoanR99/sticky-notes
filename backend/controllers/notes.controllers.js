@@ -27,11 +27,11 @@ module.exports.createNote = async (req, res) => {
 
 	const user = await User.findOne({ where: { email } });
 
-	const color = await Color.findOne({ where: { name: colorName } });
-
 	if (!user) {
 		throw new Error('User does not exist');
 	}
+
+	const color = await Color.findOne({ where: { name: colorName } });
 
 	if (!color) {
 		throw new Error('Color does not exist');

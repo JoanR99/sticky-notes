@@ -22,7 +22,7 @@ const NoteCard = ({ note }) => {
 				note={note}
 				lastEdit={lastEdit}
 			/>
-			<Card variant="outlined">
+			<Card variant="outlined" sx={{ backgroundColor: note.color.hex }}>
 				<CardContent onClick={() => handleShow()}>
 					<Typography variant="h5" component="div">
 						{note.title}
