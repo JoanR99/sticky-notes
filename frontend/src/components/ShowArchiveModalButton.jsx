@@ -15,7 +15,11 @@ const ShowArchiveModalButton = ({ note }) => {
 			)}
 			{!show && (
 				<Button onClick={handleShow}>
-					{note?.isArchive ? <UnarchiveIcon /> : <ArchiveIcon />}
+					{note?.isArchive ? (
+						<UnarchiveIcon sx={{ color: 'black' }} />
+					) : (
+						<ArchiveIcon sx={{ color: 'black' }} />
+					)}
 				</Button>
 			)}
 		</>

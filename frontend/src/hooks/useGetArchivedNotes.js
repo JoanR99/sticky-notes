@@ -7,7 +7,7 @@ const useGetArchivedNotes = () => {
 	const isArchive = true;
 	const privateRequest = useRequest();
 	const request = getNotes(privateRequest);
-	const { color } = useFilter();
+	const { color, filter } = useFilter();
 
 	const {
 		data: notes,
@@ -15,10 +15,19 @@ const useGetArchivedNotes = () => {
 		error,
 	} = useQuery(['notes', { isArchive }], async () => await request(isArchive), {
 		select: (notes) => {
-			console.log(notes);
-			console.log(color);
-			if (color === 'all') return notes;
-			return notes.filter((note) => note.color.name === color);
+			if (color === 'all' && !filter) return notes;
+			if (color !== 'all' && !filter)
+				return notes.filter((note) => note.color.name === color);
+			if (color === 'all' && filter)
+				return notes.filter(
+					(note) => note.title.includes(filter) || note.content.includes(filter)
+				);
+			if (color !== 'all' && filter)
+				return notes.filter(
+					(note) =>
+						note.color.name === color &&
+						(note.title.includes(filter) || note.content.includes(filter))
+				);
 		},
 	});
 	return { notes, isLoading, error };

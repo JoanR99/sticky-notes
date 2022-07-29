@@ -5,16 +5,6 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import Paper from '@mui/material/Paper';
-import Draggable from 'react-draggable';
-
-function PaperComponent(props) {
-	return (
-		<Draggable handle="#note" cancel={'[class*="MuiDialogContent-root"]'}>
-			<Paper {...props} />
-		</Draggable>
-	);
-}
 
 const NoteModal = ({ show, handleClose, note, lastEdit }) => (
 	<>
@@ -24,15 +14,14 @@ const NoteModal = ({ show, handleClose, note, lastEdit }) => (
 				maxWidth="sm"
 				open={show}
 				onClose={handleClose}
-				PaperComponent={PaperComponent}
 				aria-labelledby="note"
 			>
-				<DialogTitle style={{ cursor: 'move' }} id="note">
+				<DialogTitle id="note" sx={{ backgroundColor: note.color.hex }}>
 					<Typography variant="h5" component="div">
 						{note.title}
 					</Typography>
 				</DialogTitle>
-				<DialogContent>
+				<DialogContent sx={{ backgroundColor: note.color.hex }}>
 					<Typography variant="p" sx={{ mb: 1.5 }}>
 						{note.content}
 					</Typography>
@@ -40,7 +29,7 @@ const NoteModal = ({ show, handleClose, note, lastEdit }) => (
 						{lastEdit}
 					</Typography>
 				</DialogContent>
-				<DialogActions>
+				<DialogActions sx={{ backgroundColor: note.color.hex }}>
 					<Button autoFocus onClick={handleClose}>
 						Close
 					</Button>

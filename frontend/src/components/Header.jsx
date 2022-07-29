@@ -12,6 +12,9 @@ import Typography from '@mui/material/Typography';
 const LinkItem = styled(Link)`
 	text-decoration: none;
 	color: #fffff;
+	&:visited {
+		color: #ffffff;
+	}
 `;
 
 const Header = () => {

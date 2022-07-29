@@ -21,7 +21,7 @@ const ShowEditModalButton = ({ note }) => {
 			)}
 			{!show && (
 				<Button onClick={handleShow}>
-					<EditIcon color="warning" />
+					<EditIcon sx={{ color: 'black' }} />
 				</Button>
 			)}
 		</>

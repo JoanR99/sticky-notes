@@ -9,10 +9,14 @@ import Toolbar from '@mui/material/Toolbar';
 import { Box } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import FilterByColor from './FilterByColor';
+import SearchInputFilter from './SearchInputFilter';
 
 const LinkItem = styled(Link)`
 	text-decoration: none;
-	color: #fffff;
+	color: #000000;
+	&:visited {
+		color: #000000;
+	}
 `;
 
 const SecondaryHeader = () => {
@@ -28,7 +32,7 @@ const SecondaryHeader = () => {
 					}}
 				>
 					<Typography
-						variant="h6"
+						variant="h5"
 						noWrap
 						component="div"
 						sx={{ color: '#000000' }}
@@ -37,6 +41,8 @@ const SecondaryHeader = () => {
 					</Typography>
 
 					<FilterByColor />
+
+					<SearchInputFilter />
 
 					<Typography variant="h6" noWrap component="div">
 						{Noteslocation ? (

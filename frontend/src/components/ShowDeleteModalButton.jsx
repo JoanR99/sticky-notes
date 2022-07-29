@@ -14,7 +14,7 @@ const ShowDeleteModalButton = ({ note }) => {
 			)}
 			{!show && (
 				<Button onClick={handleShow}>
-					<DeleteIcon color="error" />
+					<DeleteIcon sx={{ color: 'black' }} />
 				</Button>
 			)}
 		</>
