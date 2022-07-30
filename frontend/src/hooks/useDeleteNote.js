@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from 'react-query';
 import { deleteNote } from '../services/notes.services';
-import usePrivateRequest from './usePrivateRequest';
 import { useRequest } from '../context/RequestProvider';
 
 const useDeleteNote = () => {

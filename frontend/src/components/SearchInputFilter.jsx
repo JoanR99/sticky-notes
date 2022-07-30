@@ -48,7 +48,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const SearchInputFilter = () => {
-	const { filter, setFilter } = useFilter();
+	const { searchFilter, setSearchFilter } = useFilter();
 	return (
 		<Search>
 			<SearchIconWrapper>
@@ -57,8 +57,8 @@ const SearchInputFilter = () => {
 			<StyledInputBase
 				placeholder="Search…"
 				inputProps={{ 'aria-label': 'search' }}
-				value={filter}
-				onChange={(e) => setFilter(e.target.value)}
+				value={searchFilter}
+				onChange={(e) => setSearchFilter(e.target.value)}
 			/>
 		</Search>
 	);

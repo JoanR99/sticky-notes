@@ -1,19 +1,22 @@
-import useLogout from '../hooks/useLogout';
+import { useQueryClient } from 'react-query';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthProvider';
 import { toast } from 'react-toastify';
+import useLogout from '../hooks/useLogout';
 
 const Logout = () => {
 	const { logoutUser, isLoading } = useLogout();
 	const navigate = useNavigate();
 	const { setAuth } = useAuth();
+	const queryClient = useQueryClient();
 
 	const handleClick = () => {
 		logoutUser(null, {
 			onSuccess: (data) => {
 				setAuth((prev) => ({ ...prev, email: '', accessToken: '' }));
 				toast.success('Logout successfuly');
+				queryClient.clear();
 				navigate('/login');
 			},
 			onError: (error) => {

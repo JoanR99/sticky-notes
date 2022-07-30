@@ -8,7 +8,6 @@ import Notes from './Screens/Notes';
 import ArchivedNotes from './Screens/ArchivedNotes';
 import Register from './Screens/Register';
 import Login from './Screens/Login';
-import Note from './Screens/Note';
 import RequireAuth from './components/RequireAuth';
 import PersistLogin from './components/PersistLogin';
 import 'react-toastify/dist/ReactToastify.css';
@@ -24,7 +23,6 @@ function App() {
 						<Route element={<RequireAuth />}>
 							<Route path="/" element={<Notes />} />
 							<Route path="archived" element={<ArchivedNotes />} />
-							<Route path=":id" element={<Note />} />
 						</Route>
 					</Route>
 

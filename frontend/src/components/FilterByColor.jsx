@@ -4,7 +4,7 @@ import useGetColors from '../hooks/useGetColors';
 
 const FilterByColor = () => {
 	const { colors, isLoading, error } = useGetColors();
-	const { setColor, color } = useFilter();
+	const { setColorFilter, colorFilter } = useFilter();
 
 	return (
 		<Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -14,8 +14,8 @@ const FilterByColor = () => {
 			<Select
 				label="Filter by color"
 				labelId="colors"
-				onChange={(e) => setColor(e.target.value)}
-				value={color}
+				onChange={(e) => setColorFilter(e.target.value)}
+				value={colorFilter}
 			>
 				<MenuItem key={0} value="all">
 					All

@@ -45,7 +45,7 @@ const FormInput = ({ name, ...otherProps }) => {
 			name={name}
 			defaultValue=""
 			render={({ field }) => (
-				<CssTextField
+				<TextField
 					{...field}
 					{...otherProps}
 					variant="outlined"

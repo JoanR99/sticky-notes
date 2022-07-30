@@ -17,7 +17,7 @@ const Notes = () => {
 	return (
 		<Container sx={{ mb: 2 }}>
 			{isLoading && <FullScreenLoader />}
-			{notes?.length && <NoteList notes={notes} />}
+			{notes?.length > 0 && <NoteList notes={notes} />}
 			{!notes?.length && <h2>There are currently no notes</h2>}
 			<AddNote />
 		</Container>

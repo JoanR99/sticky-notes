@@ -4,7 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import useShowModal from '../hooks/useShowModal';
 import DeleteNoteModal from './DeleteNoteModal';
 
-const ShowDeleteModalButton = ({ note }) => {
+const DeleteNote = ({ note }) => {
 	const { show, handleClose, handleShow } = useShowModal();
 
 	return (
@@ -21,4 +21,4 @@ const ShowDeleteModalButton = ({ note }) => {
 	);
 };
 
-export default ShowDeleteModalButton;
+export default DeleteNote;

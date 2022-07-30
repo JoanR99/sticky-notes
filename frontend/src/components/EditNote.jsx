@@ -2,22 +2,15 @@ import React from 'react';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
 import useShowModal from '../hooks/useShowModal';
-import EditNoteForm from './EditNoteForm';
-import CreateOrEditNoteModal from './CreateOrEditNoteModal';
+import EditNoteModal from './EditNoteModal';
 
-const ShowEditModalButton = ({ note }) => {
+const EditNote = ({ note }) => {
 	const { show, handleClose, handleShow } = useShowModal();
 
 	return (
 		<>
 			{show && (
-				<CreateOrEditNoteModal
-					show={show}
-					handleClose={handleClose}
-					title="Edit Note"
-				>
-					<EditNoteForm handleClose={handleClose} note={note} />
-				</CreateOrEditNoteModal>
+				<EditNoteModal show={show} handleClose={handleClose} note={note} />
 			)}
 			{!show && (
 				<Button onClick={handleShow}>
@@ -28,4 +21,4 @@ const ShowEditModalButton = ({ note }) => {
 	);
 };
 
-export default ShowEditModalButton;
+export default EditNote;

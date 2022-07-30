@@ -5,7 +5,7 @@ import UnarchiveIcon from '@mui/icons-material/Unarchive';
 import useShowModal from '../hooks/useShowModal';
 import ArchiveNoteModal from './ArchiveNoteModal';
 
-const ShowArchiveModalButton = ({ note }) => {
+const ArchiveNote = ({ note }) => {
 	const { show, handleClose, handleShow } = useShowModal();
 
 	return (
@@ -26,4 +26,4 @@ const ShowArchiveModalButton = ({ note }) => {
 	);
 };
 
-export default ShowArchiveModalButton;
+export default ArchiveNote;

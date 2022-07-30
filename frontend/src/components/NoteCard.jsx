@@ -5,9 +5,9 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import NoteModal from './NoteModal';
 import useShowModal from '../hooks/useShowModal';
-import ShowDeleteModalButton from './ShowDeleteModalButton';
-import ShowArchiveModalButton from './ShowArchiveModalButton';
-import ShowEditModalButton from './ShowEditModalButton';
+import DeleteNote from './DeleteNote';
+import ArchiveNote from './ArchiveNote';
+import EditNote from './EditNote';
 
 const NoteCard = ({ note }) => {
 	const updatedAt = new Date(note.updatedAt);
@@ -33,9 +33,9 @@ const NoteCard = ({ note }) => {
 				</CardContent>
 
 				<CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-					<ShowEditModalButton note={note} />
-					<ShowArchiveModalButton note={note} />
-					<ShowDeleteModalButton note={note} />
+					<EditNote note={note} />
+					<ArchiveNote note={note} />
+					<DeleteNote note={note} />
 				</CardActions>
 			</Card>
 		</>

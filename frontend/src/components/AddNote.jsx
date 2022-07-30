@@ -1,7 +1,6 @@
 import React from 'react';
 import useShowModal from '../hooks/useShowModal';
-import CreateOrEditNoteModal from './CreateOrEditNoteModal';
-import CreateNoteForm from './CreateNoteForm';
+import AddNoteModal from './AddNoteModal';
 import Fab from '@mui/material/Fab';
 import { Box } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -12,13 +11,7 @@ const AddNote = () => {
 	console.log('add');
 
 	return show ? (
-		<CreateOrEditNoteModal
-			show={show}
-			handleClose={handleClose}
-			title="Create Note"
-		>
-			<CreateNoteForm handleClose={handleClose} />
-		</CreateOrEditNoteModal>
+		<AddNoteModal show={show} handleClose={handleClose} />
 	) : (
 		<Box sx={{ '& > :not(style)': { m: 1 } }}>
 			<Fab

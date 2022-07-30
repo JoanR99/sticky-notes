@@ -3,7 +3,12 @@ import { logout } from '../services/auth.services';
 
 const useLogout = () => {
 	const { mutate: logoutUser, isLoading } = useMutation(
-		async () => await logout()
+		async () => await logout(),
+		{
+			onSuccess: (data) => {
+				localStorage.setItem('persist', JSON.stringify(false));
+			},
+		}
 	);
 
 	return {

@@ -3,7 +3,6 @@ import { Outlet } from 'react-router-dom';
 import useRefreshToken from '../hooks/useRefreshToken';
 import { useAuth } from '../context/AuthProvider';
 import FullScreenLoader from './FullScreenLoader';
-import useLocalStorage from '../hooks/useLocalStorage';
 
 const PersistLogin = () => {
 	const refresh = useRefreshToken();

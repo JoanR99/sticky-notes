@@ -15,7 +15,7 @@ const ArchivedNotes = () => {
 	return (
 		<Container>
 			{isLoading && <FullScreenLoader />}
-			{notes?.length && <NoteList notes={notes} />}
+			{notes?.length > 0 && <NoteList notes={notes} />}
 			{notes?.length === 0 && <h2>There are currently no archived notes</h2>}
 		</Container>
 	);
