@@ -12,11 +12,6 @@ const createUser = async (req, res) => {
 	res.status(201).json({ message: 'User created successfuly' });
 };
 
-const getUsers = async (req, res) => {
-	const users = await User.findAll({ include: 'roles' });
-	res.json(users);
-};
-
 const login = async (req, res) => {
 	const { email, password } = req.body;
 
@@ -26,8 +21,8 @@ const login = async (req, res) => {
 	if (match) {
 		const accessToken = jwt.sign(
 			{
-				userInfo: {
-					email: user.email,
+				user: {
+					id: user.id,
 				},
 			},
 			process.env.ACCESS_TOKEN_SECRET,
@@ -35,7 +30,7 @@ const login = async (req, res) => {
 		);
 
 		const refreshToken = jwt.sign(
-			{ email: user.email },
+			{ id: user.id },
 			process.env.REFRESH_TOKEN_SECRET,
 			{ expiresIn: '1d' }
 		);

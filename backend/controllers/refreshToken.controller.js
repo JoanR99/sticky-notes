@@ -17,12 +17,12 @@ const refreshToken = async (req, res) => {
 		refreshToken,
 		process.env.REFRESH_TOKEN_SECRET,
 		async (err, decoded) => {
-			if (err || user.email !== decoded.email) return res.sendStatus(403);
+			if (err || user.id !== decoded.id) return res.sendStatus(403);
 
 			const accessToken = jwt.sign(
 				{
-					userInfo: {
-						email: decoded.email,
+					user: {
+						id: decoded.id,
 					},
 				},
 				process.env.ACCESS_TOKEN_SECRET,
