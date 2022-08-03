@@ -19,7 +19,7 @@ import { loginSchema, defaultValues } from '../utils/loginSchema';
 const LoginForm = () => {
 	const { mutate: login, isLoading } = useLogin();
 
-	const { setAuth } = useAuth();
+	const { setAccessToken } = useAuth();
 	const navigate = useNavigate();
 	const location = useLocation();
 	const from = location.state?.from?.pathname || '/';
@@ -36,7 +36,7 @@ const LoginForm = () => {
 			{ email, password },
 			{
 				onSuccess: ({ accessToken }) => {
-					setAuth({ email, accessToken });
+					setAccessToken(accessToken);
 					localStorage.setItem('persist', JSON.stringify(persist));
 					reset();
 					navigate(from, { replace: true });

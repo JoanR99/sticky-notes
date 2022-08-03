@@ -1,24 +1,22 @@
 import { baseRequest, privateRequest } from './baseRequest';
 
 export const register = async (credentials) => {
-	const response = await privateRequest.post(`/users/register`, credentials);
+	const response = await baseRequest.post(`/users/register`, credentials);
 
 	return response.data;
 };
 
 export const login = async (credentials) => {
-	const response = await privateRequest.post(`/users/login`, credentials);
+	const response = await baseRequest.post(`/auth/login`, credentials);
 	return response.data;
 };
 
 export const logout = async () => {
-	const response = await privateRequest.get(`/users/logout`, {
-		withCredentials: true,
-	});
+	const response = await privateRequest.get(`/auth/logout`);
 	return response.data;
 };
 
-export const getUsers = () => baseRequest.get(`/users`);
-
-export const getRefreshToken = () =>
-	baseRequest.get(`/refresh`, { withCredentials: true });
+export const getRefreshToken = async () => {
+	const response = await privateRequest.get('/auth/refresh');
+	return response.data;
+};

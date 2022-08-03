@@ -37,20 +37,22 @@ const NoteForm = ({
 						/>
 
 						<SelectInput id="color" name="color" label="color" required>
-							{colors?.map((color) => (
-								<MenuItem key={color.id} value={color.name}>
-									<Box
-										component="span"
-										sx={{
-											height: 20,
-											width: 20,
-											backgroundColor: color.hex,
-											mr: 2,
-										}}
-									></Box>
-									{color.name}
-								</MenuItem>
-							))}
+							{colors?.map((color) => {
+								return (
+									<MenuItem key={color.id} value={color.id}>
+										<Box
+											component="span"
+											sx={{
+												height: 20,
+												width: 20,
+												backgroundColor: color.hex,
+												mr: 2,
+											}}
+										></Box>
+										{color.name}
+									</MenuItem>
+								);
+							})}
 						</SelectInput>
 					</Stack>
 				</Grid>

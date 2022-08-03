@@ -18,7 +18,7 @@ const LinkItem = styled(Link)`
 `;
 
 const Header = () => {
-	const { auth } = useAuth();
+	const { accessToken } = useAuth();
 
 	return (
 		<Box sx={{ flexGrow: 1 }}>
@@ -32,7 +32,7 @@ const Header = () => {
 					<Typography variant="h6" noWrap component="div">
 						<LinkItem to="/">MUI</LinkItem>
 					</Typography>
-					<Box>{auth.accessToken && <Logout />}</Box>
+					<Box>{accessToken && <Logout />}</Box>
 				</Toolbar>
 			</AppBar>
 		</Box>

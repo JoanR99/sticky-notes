@@ -12,9 +12,4 @@ const privateRequest = axios.create({
 baseRequest.defaults.headers.common['Content-Type'] = 'application/json';
 privateRequest.defaults.headers.common['Content-Type'] = 'application/json';
 
-const refreshAccessTokenFn = async () => {
-	const response = await privateRequest.get('/refresh');
-	return response.data;
-};
-
-export { baseRequest, privateRequest, refreshAccessTokenFn };
+export { baseRequest, privateRequest };

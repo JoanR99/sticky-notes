@@ -23,7 +23,7 @@ module.exports.getNotes = async (req, res) => {
 
 module.exports.createNote = async (req, res) => {
 	const id = req.user;
-	const { title, content, color: colorName } = req.body;
+	const { title, content, color: colorId } = req.body;
 
 	const user = await User.findOne({ where: { id } });
 
@@ -31,7 +31,7 @@ module.exports.createNote = async (req, res) => {
 		throw new Error('User does not exist');
 	}
 
-	const color = await Color.findOne({ where: { name: colorName } });
+	const color = await Color.findOne({ where: { id: colorId } });
 
 	if (!color) {
 		throw new Error('Color does not exist');
@@ -78,7 +78,7 @@ module.exports.deleteNote = async (req, res) => {
 module.exports.updateNote = async (req, res) => {
 	const userId = req.user;
 	const { id } = req.params;
-	const { title, content, color: colorName, isArchive } = req.body;
+	const { title, content, color: colorId, isArchive } = req.body;
 
 	const note = await Note.findOne({ where: { id, userId } });
 
@@ -86,17 +86,24 @@ module.exports.updateNote = async (req, res) => {
 		throw new Error('You can not update a note of another user');
 	}
 
-	if (!title) {
-		await Note.update({ isArchive }, { where: { id } });
-	} else {
-		const newColor = await Color.findOne({ where: { name: colorName } });
+	if (typeof isArchive === 'undefined') {
+		console.log(note);
+		if (note.colorId !== colorId) {
+			const newColor = await Color.findOne({ where: { id: colorId } });
 
-		if (!newColor) {
-			throw new Error('Color does not exist');
+			if (!newColor) {
+				throw new Error('Color does not exist');
+			}
+
+			await note.setColor(newColor);
 		}
 
-		await note.setColor(newColor);
-		await Note.update({ title, content }, { where: { id } });
+		note.title = title;
+		note.content = content;
+		await note.save();
+	} else {
+		note.isArchive = isArchive;
+		await note.save();
 	}
 
 	return res.status(200).json({ message: 'Note updated successfully' });

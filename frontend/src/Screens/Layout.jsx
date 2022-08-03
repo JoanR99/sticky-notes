@@ -7,11 +7,11 @@ import { useAuth } from '../context/AuthProvider';
 
 const Layout = () => {
 	console.log('layout');
-	const { auth } = useAuth();
+	const { accessToken } = useAuth();
 	return (
 		<>
 			<Header />
-			{auth?.accessToken && <SecondaryHeader />}
+			{accessToken && <SecondaryHeader />}
 
 			<Container>
 				<Outlet />

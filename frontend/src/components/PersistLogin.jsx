@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
-import useRefreshToken from '../hooks/useRefreshToken';
+import { getRefreshToken } from '../services/auth.services';
 import { useAuth } from '../context/AuthProvider';
 import FullScreenLoader from './FullScreenLoader';
 
 const PersistLogin = () => {
-	const refresh = useRefreshToken();
-	const { auth } = useAuth();
+	const { accessToken, setAccessToken } = useAuth();
 	const persist = JSON.parse(localStorage.getItem('persist'));
 	const [isLoading, setIsLoading] = useState(true);
 
@@ -14,7 +13,9 @@ const PersistLogin = () => {
 		let isMounted = true;
 		const verifyRefreshToken = async () => {
 			try {
-				await refresh();
+				const { accessToken: newAccessToken } = await getRefreshToken();
+				console.log(newAccessToken);
+				setAccessToken(newAccessToken);
 			} catch (e) {
 				console.log(e);
 			} finally {
@@ -22,7 +23,7 @@ const PersistLogin = () => {
 			}
 		};
 
-		!auth?.accessToken ? verifyRefreshToken() : setIsLoading(false);
+		!accessToken ? verifyRefreshToken() : setIsLoading(false);
 
 		return () => {
 			isMounted = false;

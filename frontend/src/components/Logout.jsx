@@ -8,13 +8,13 @@ import useLogout from '../hooks/useLogout';
 const Logout = () => {
 	const { logoutUser, isLoading } = useLogout();
 	const navigate = useNavigate();
-	const { setAuth } = useAuth();
+	const { setAccessToken } = useAuth();
 	const queryClient = useQueryClient();
 
 	const handleClick = () => {
 		logoutUser(null, {
 			onSuccess: (data) => {
-				setAuth((prev) => ({ ...prev, email: '', accessToken: '' }));
+				setAccessToken('');
 				toast.success('Logout successfuly');
 				queryClient.clear();
 				navigate('/login');

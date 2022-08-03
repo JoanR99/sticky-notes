@@ -2,7 +2,7 @@ import React from 'react';
 import { useQueryClient } from 'react-query';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
-import { object, string } from 'zod';
+import { object, string, number } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
@@ -18,13 +18,13 @@ const EditNoteModal = ({ handleClose, show, note }) => {
 	const noteSchema = object({
 		title: string().optional(),
 		content: string().min(1, 'Content is required'),
-		color: string(),
+		color: number(),
 	});
 
 	const defaultValues = {
 		title: note?.title,
 		content: note?.content,
-		color: note?.color.name,
+		color: note?.color.id,
 	};
 
 	const methods = useForm({

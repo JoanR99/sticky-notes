@@ -1,19 +1,19 @@
 import { privateRequest } from '../services/baseRequest';
 import { useEffect } from 'react';
-import useRefreshToken from './useRefreshToken';
 import { useAuth } from '../context/AuthProvider';
+import { getRefreshToken } from '../services/auth.services';
 
 const usePrivateRequest = () => {
-	const refresh = useRefreshToken();
-	const { auth } = useAuth();
+	const { accessToken, setAccessToken } = useAuth();
 
 	useEffect(() => {
 		console.log('r effect');
+		console.log(accessToken);
 
 		const requestIntercept = privateRequest.interceptors.request.use(
 			(config) => {
 				if (!config.headers['Authorization']) {
-					config.headers['Authorization'] = `Bearer ${auth?.accessToken}`;
+					config.headers['Authorization'] = `Bearer ${accessToken}`;
 				}
 				return config;
 			},
@@ -26,8 +26,9 @@ const usePrivateRequest = () => {
 				const prevRequest = error?.config;
 				if (error?.response?.status === 403 && !prevRequest?.sent) {
 					prevRequest.sent = true;
-					const newAccessToken = await refresh();
-					console.log(auth?.accessToken);
+					console.log('intercept');
+					const { accessToken: newAccessToken } = await getRefreshToken();
+					setAccessToken(newAccessToken);
 					prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
 
 					return privateRequest(prevRequest);
@@ -40,7 +41,7 @@ const usePrivateRequest = () => {
 			privateRequest.interceptors.request.eject(requestIntercept);
 			privateRequest.interceptors.response.eject(responseIntercept);
 		};
-	}, [auth]);
+	}, [accessToken]);
 
 	return privateRequest;
 };

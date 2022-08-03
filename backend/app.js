@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const notesRouter = require('./routes/notes.routes');
 const userRouter = require('./routes/user.routes');
-const refreshRouter = require('./routes/refreshToken.routes');
 const colorsRouter = require('./routes/colors.routes');
+const authRouter = require('./routes/auth.routes');
 const errorHandler = require('./middlewares/error.middleware');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -22,8 +22,8 @@ if (process.env.NODE_ENV === 'production') {
 
 app.use('/api/notes', notesRouter);
 app.use('/api/users', userRouter);
-app.use('/api/refresh', refreshRouter);
 app.use('/api/colors', colorsRouter);
+app.use('/api/auth', authRouter);
 
 app.get('*', (req, res) => {
 	res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));

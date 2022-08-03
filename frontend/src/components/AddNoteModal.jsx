@@ -1,6 +1,6 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { object, string } from 'zod';
+import { object, string, number } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-toastify';
 import Dialog from '@mui/material/Dialog';
@@ -18,13 +18,13 @@ const AddNoteModal = ({ handleClose, show }) => {
 	const noteSchema = object({
 		title: string().optional(),
 		content: string().min(1, 'Content is required'),
-		color: string(),
+		color: number(),
 	});
 
 	const defaultValues = {
 		title: '',
 		content: '',
-		color: 'white',
+		color: 14,
 	};
 
 	const methods = useForm({
