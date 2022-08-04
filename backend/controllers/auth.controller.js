@@ -1,47 +1,43 @@
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const User = require('../models/user');
+const authService = require('../services/auth.services');
+const userService = require('../services/user.services');
+const Unauthorized = require('../errors/Unauthorized');
 
-module.exports.login = async (req, res) => {
+const login = async (req, res) => {
 	const { email, password } = req.body;
 
-	const user = await User.findOne({ where: { email: email } });
-	if (!user) throw new Error('User not found');
-	const match = await bcrypt.compare(password, user.password);
-	if (match) {
-		const accessToken = jwt.sign(
-			{
-				user: {
-					id: user.id,
-				},
-			},
-			process.env.ACCESS_TOKEN_SECRET,
-			{ expiresIn: '1m' }
+	const user = await userService.findUserByEmail(email);
+
+	if (user) {
+		const match = await authService.verifyPasswordsMatch(
+			password,
+			user.password
 		);
 
-		const refreshToken = jwt.sign(
-			{ id: user.id },
-			process.env.REFRESH_TOKEN_SECRET,
-			{ expiresIn: '1d' }
-		);
+		if (match) {
+			const accessToken = authService.createAccessToken(user.id);
+			const refreshToken = authService.createRefreshToken(user.id);
 
-		user.refreshToken = refreshToken;
-		await user.save();
+			user.refreshToken = refreshToken;
+			await user.save();
 
-		res.cookie('jwt', refreshToken, {
-			httpOnly: true,
-			sameSite: 'None',
-			secure: true,
-			maxAge: 24 * 60 * 60 * 1000,
-		});
-		res.json({ accessToken });
-	} else {
-		throw new Error('User not found');
+			res
+				.cookie('jwt', refreshToken, {
+					httpOnly: true,
+					sameSite: 'None',
+					secure: true,
+					maxAge: 24 * 60 * 60 * 1000,
+				})
+				.json({ accessToken });
+		}
 	}
+
+	throw new Unauthorized('Wrong credentials');
 };
 
-module.exports.logout = async (req, res) => {
+const logout = async (req, res) => {
 	const cookies = req.cookies;
 
 	if (!cookies?.jwt) return res.sendStatus(204);
@@ -72,7 +68,7 @@ module.exports.logout = async (req, res) => {
 	res.sendStatus(204);
 };
 
-module.exports.refreshToken = async (req, res) => {
+const refreshToken = async (req, res) => {
 	const cookies = req.cookies;
 
 	if (!cookies?.jwt) return res.sendStatus(401);
@@ -103,3 +99,5 @@ module.exports.refreshToken = async (req, res) => {
 		}
 	);
 };
+
+module.exports = { login, logout, refreshToken };
