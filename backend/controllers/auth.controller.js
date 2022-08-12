@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const User = require('../models/user');
 const authService = require('../services/auth.services');
 const userService = require('../services/user.services');
 const Unauthorized = require('../errors/Unauthorized');
@@ -44,7 +43,7 @@ const logout = async (req, res) => {
 
 	const refreshToken = cookies.jwt;
 
-	const user = await User.findOne({ where: { refreshToken: refreshToken } });
+	const user = await userService.findUserByRefreshToken(refreshToken);
 
 	if (!user) {
 		res.clearCookie('jwt', {
@@ -75,29 +74,17 @@ const refreshToken = async (req, res) => {
 
 	const refreshToken = cookies.jwt;
 
-	const user = await User.findOne({ where: { refreshToken: refreshToken } });
+	const user = await userService.findUserByRefreshToken(refreshToken);
 
 	if (!user) return res.sendStatus(403);
 
-	jwt.verify(
-		refreshToken,
-		process.env.REFRESH_TOKEN_SECRET,
-		async (err, decoded) => {
-			if (err || user.id !== decoded.id) return res.sendStatus(403);
+	jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
+		if (err || user.id !== decoded.id) return res.sendStatus(403);
 
-			const accessToken = jwt.sign(
-				{
-					user: {
-						id: decoded.id,
-					},
-				},
-				process.env.ACCESS_TOKEN_SECRET,
-				{ expiresIn: '1m' }
-			);
+		const accessToken = authService.createAccessToken(decoded.id);
 
-			res.json({ accessToken });
-		}
-	);
+		res.json({ accessToken });
+	});
 };
 
 module.exports = { login, logout, refreshToken };

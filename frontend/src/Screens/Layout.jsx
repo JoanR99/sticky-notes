@@ -1,8 +1,8 @@
-import React from 'react';
 import { Outlet } from 'react-router-dom';
+import Container from '@mui/material/Container';
+
 import Header from '../components/Header';
 import SecondaryHeader from '../components/SecondaryHeader';
-import Container from '@mui/material/Container';
 import { useAuth } from '../context/AuthProvider';
 
 const Layout = () => {

@@ -1,5 +1,6 @@
-import { getNote } from '../services/notes.services';
 import { useQuery } from 'react-query';
+
+import { getNote } from '../services/notes.services';
 import { useRequest } from '../context/RequestProvider';
 
 const useGetNotes = (id) => {

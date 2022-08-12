@@ -1,8 +1,9 @@
 import { useQueryClient } from 'react-query';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthProvider';
 import { toast } from 'react-toastify';
+
+import { useAuth } from '../context/AuthProvider';
 import useLogout from '../hooks/useLogout';
 
 const Logout = () => {

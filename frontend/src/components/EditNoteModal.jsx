@@ -1,4 +1,3 @@
-import React from 'react';
 import { useQueryClient } from 'react-query';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
@@ -7,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+
 import useUpdateNote from '../hooks/useUpdateNote';
 import NoteForm from './NoteForm';
 

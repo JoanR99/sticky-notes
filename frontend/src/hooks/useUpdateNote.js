@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from 'react-query';
+
 import { updateNote } from '../services/notes.services';
 import { useRequest } from '../context/RequestProvider';
 

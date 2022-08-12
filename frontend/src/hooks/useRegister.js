@@ -1,4 +1,5 @@
 import { useMutation } from 'react-query';
+
 import { register } from '../services/auth.services';
 
 const useRegister = () =>

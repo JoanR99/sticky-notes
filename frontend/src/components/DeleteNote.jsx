@@ -1,6 +1,6 @@
-import React from 'react';
 import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
+
 import useShowModal from '../hooks/useShowModal';
 import DeleteNoteModal from './DeleteNoteModal';
 

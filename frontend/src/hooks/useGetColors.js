@@ -1,5 +1,6 @@
-import { getColors } from '../services/colors.services';
 import { useQuery } from 'react-query';
+
+import { getColors } from '../services/colors.services';
 import { useRequest } from '../context/RequestProvider';
 
 const useGetColors = () => {

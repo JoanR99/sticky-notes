@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { AuthProvider } from './context/AuthProvider';
 import { QueryClientProvider, QueryClient } from 'react-query';
+
+import { AuthProvider } from './context/AuthProvider';
 import { RequestProvider } from './context/RequestProvider';
 import { FilterProvider } from './context/FilterProvider';
 import App from './App';

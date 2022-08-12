@@ -1,9 +1,10 @@
 import { createContext, useContext } from 'react';
+
 import usePrivateRequest from '../hooks/usePrivateRequest';
 
 const RequestContext = createContext(() => {});
 
-export const RequestProvider = ({ children }) => {
+const RequestProvider = ({ children }) => {
 	const privateRequest = usePrivateRequest();
 
 	return (
@@ -13,4 +14,6 @@ export const RequestProvider = ({ children }) => {
 	);
 };
 
-export const useRequest = () => useContext(RequestContext);
+const useRequest = () => useContext(RequestContext);
+
+export { RequestProvider, useRequest };

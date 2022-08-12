@@ -1,11 +1,11 @@
-const bcrypt = require('bcrypt');
-const User = require('../models/user');
+const userService = require('../services/user.services');
 
-module.exports.createUser = async (req, res) => {
+const createUser = async (req, res) => {
 	const { username, email, password } = req.body;
 
-	const hash = await bcrypt.hash(password, 10);
-	await User.create({ username, email, password: hash });
+	await userService.createUser(username, email, password);
 
-	res.status(201).json({ message: 'User created successfuly' });
+	res.status(201).json({ message: 'User created successfully' });
 };
+
+module.exports = { createUser };

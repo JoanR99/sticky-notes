@@ -1,13 +1,11 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
-
 import { styled } from '@mui/material/styles';
-
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import { Box } from '@mui/material';
 import Typography from '@mui/material/Typography';
+
 import FilterByColor from './FilterByColor';
 import SearchInputFilter from './SearchInputFilter';
 
@@ -20,7 +18,7 @@ const LinkItem = styled(Link)`
 `;
 
 const SecondaryHeader = () => {
-	const Noteslocation = useLocation().pathname === '/' ? true : false;
+	const notesLocation = useLocation().pathname === '/' ? true : false;
 
 	return (
 		<Box sx={{ flexGrow: 1, mb: 2 }}>
@@ -37,7 +35,7 @@ const SecondaryHeader = () => {
 						component="div"
 						sx={{ color: '#000000' }}
 					>
-						{Noteslocation ? 'My Notes' : 'Archived Notes'}
+						{notesLocation ? 'My Notes' : 'Archived Notes'}
 					</Typography>
 
 					<FilterByColor />
@@ -45,7 +43,7 @@ const SecondaryHeader = () => {
 					<SearchInputFilter />
 
 					<Typography variant="h6" noWrap component="div">
-						{Noteslocation ? (
+						{notesLocation ? (
 							<LinkItem to="/archived">Archived Notes</LinkItem>
 						) : (
 							<LinkItem to="/">My Notes</LinkItem>

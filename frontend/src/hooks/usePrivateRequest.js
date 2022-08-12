@@ -1,5 +1,6 @@
-import { privateRequest } from '../services/baseRequest';
 import { useEffect } from 'react';
+
+import { privateRequest } from '../services/baseRequest';
 import { useAuth } from '../context/AuthProvider';
 import { getRefreshToken } from '../services/auth.services';
 

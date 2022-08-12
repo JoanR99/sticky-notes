@@ -1,9 +1,8 @@
-import React from 'react';
+import { Box, Fab } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+
 import useShowModal from '../hooks/useShowModal';
 import AddNoteModal from './AddNoteModal';
-import Fab from '@mui/material/Fab';
-import { Box } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 
 const AddNote = () => {
 	const { show, handleClose, handleShow } = useShowModal();

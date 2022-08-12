@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from 'react';
 
 const FilterContext = createContext({});
 
-export const FilterProvider = ({ children }) => {
+const FilterProvider = ({ children }) => {
 	const [colorFilter, setColorFilter] = useState('all');
 	const [searchFilter, setSearchFilter] = useState('');
 
@@ -15,4 +15,6 @@ export const FilterProvider = ({ children }) => {
 	);
 };
 
-export const useFilter = () => useContext(FilterContext);
+const useFilter = () => useContext(FilterContext);
+
+export { FilterProvider, useFilter };

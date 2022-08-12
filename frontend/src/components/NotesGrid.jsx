@@ -1,4 +1,5 @@
 import { toast } from 'react-toastify';
+
 import useGetNotes from '../hooks/useGetNotes';
 import NoteList from '../components/NoteList';
 import FullScreenLoader from '../components/FullScreenLoader';

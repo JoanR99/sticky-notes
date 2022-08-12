@@ -1,4 +1,3 @@
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { object, string, number } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,8 +5,9 @@ import { toast } from 'react-toastify';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import useAddNote from '../hooks/useAddNote';
 import { useQueryClient } from 'react-query';
+
+import useAddNote from '../hooks/useAddNote';
 import NoteForm from './NoteForm';
 
 const AddNoteModal = ({ handleClose, show }) => {

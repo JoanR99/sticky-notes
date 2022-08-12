@@ -1,5 +1,6 @@
-import { addNote } from '../services/notes.services';
 import { useMutation, useQueryClient } from 'react-query';
+
+import { addNote } from '../services/notes.services';
 import { useRequest } from '../context/RequestProvider';
 
 const useAddNote = () => {

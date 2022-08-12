@@ -1,21 +1,23 @@
-const Color = require('../models/color');
+const colorService = require('../services/color.services');
 
-module.exports.getColors = async (req, res) => {
-	const colors = await Color.findAll({});
+const getColors = async (req, res) => {
+	const colors = await colorService.findAll();
 
 	res.json(colors);
 };
 
-module.exports.createColor = async (req, res) => {
+const createColor = async (req, res) => {
 	const { name, hex } = req.body;
-	const color = await Color.create({ name, hex });
+	const color = await colorService.createColor(name, hex);
 
 	res.json(color);
 };
 
-module.exports.deleteColor = async (req, res) => {
+const deleteColor = async (req, res) => {
 	const { id } = req.params;
-	const color = await Color.destroy({ where: { id } });
+	await colorService.deleteColor(id);
 
-	res.json(color);
+	res.json({ message: 'Color deleted successfully' });
 };
+
+module.exports = { getColors, createColor, deleteColor };

@@ -1,4 +1,5 @@
 import { useMutation } from 'react-query';
+
 import { logout } from '../services/auth.services';
 
 const useLogout = () => {

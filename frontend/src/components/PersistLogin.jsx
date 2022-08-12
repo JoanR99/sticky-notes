@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
+
 import { getRefreshToken } from '../services/auth.services';
 import { useAuth } from '../context/AuthProvider';
 import FullScreenLoader from './FullScreenLoader';

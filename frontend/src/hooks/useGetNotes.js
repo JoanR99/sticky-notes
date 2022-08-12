@@ -1,5 +1,6 @@
-import { getNotes } from '../services/notes.services';
 import { useQuery } from 'react-query';
+
+import { getNotes } from '../services/notes.services';
 import { useRequest } from '../context/RequestProvider';
 import { useFilter } from '../context/FilterProvider';
 import filterNotes from '../utils/filter';

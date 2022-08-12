@@ -1,5 +1,4 @@
 const express = require('express');
-const app = express();
 const notesRouter = require('./routes/notes.routes');
 const userRouter = require('./routes/user.routes');
 const colorsRouter = require('./routes/colors.routes');
@@ -10,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const corsOptions = require('./config/corsOptions');
 const credentials = require('./middlewares/credentials');
 const cors = require('cors');
+const app = express();
 
 app.use(credentials);
 app.use(cors(corsOptions));

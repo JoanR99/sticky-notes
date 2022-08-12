@@ -1,7 +1,7 @@
-import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import CssBaseline from '@mui/material/CssBaseline';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Layout from './Screens/Layout';
 import Notes from './Screens/Notes';
@@ -10,7 +10,6 @@ import Register from './Screens/Register';
 import Login from './Screens/Login';
 import RequireAuth from './components/RequireAuth';
 import PersistLogin from './components/PersistLogin';
-import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
 	return (

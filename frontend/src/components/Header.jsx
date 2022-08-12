@@ -1,13 +1,9 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
+import { styled } from '@mui/material/styles';
+import { Box, AppBar, Toolbar, Typography } from '@mui/material';
+
 import Logout from './Logout';
 import { useAuth } from '../context/AuthProvider';
-import { styled } from '@mui/material/styles';
-
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import { Box } from '@mui/material';
-import Typography from '@mui/material/Typography';
 
 const LinkItem = styled(Link)`
 	text-decoration: none;

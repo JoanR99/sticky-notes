@@ -1,6 +1,6 @@
-import React from 'react';
 import Container from '@mui/material/Container';
 import { toast } from 'react-toastify';
+
 import useGetArchivedNotes from '../hooks/useGetArchivedNotes';
 import NoteList from '../components/NoteList';
 import FullScreenLoader from '../components/FullScreenLoader';

@@ -1,5 +1,4 @@
 const { Router } = require('express');
-const router = Router();
 const {
 	getNotes,
 	createNote,
@@ -9,6 +8,7 @@ const {
 } = require('../controllers/notes.controllers');
 const verifyJWT = require('../middlewares/verifyJWT');
 const asyncHandler = require('../middlewares/asyncHandler');
+const router = Router();
 
 router
 	.route('/')

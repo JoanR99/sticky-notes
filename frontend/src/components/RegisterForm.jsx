@@ -1,14 +1,13 @@
-import React from 'react';
 import { Box, Typography, Grid, Stack } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import FormInput from '../components/FormInput';
-import useRegister from '../hooks/useRegister';
 import { useNavigate, Link } from 'react-router-dom';
-
 import { toast } from 'react-toastify';
 import styled from '@emotion/styled';
+
+import FormInput from '../components/FormInput';
+import useRegister from '../hooks/useRegister';
 import { registerSchema, defaultValues } from '../utils/registerSchema';
 
 const RegisterForm = () => {

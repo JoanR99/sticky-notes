@@ -1,6 +1,6 @@
 import { object, string, boolean } from 'zod';
 
-export const loginSchema = object({
+const loginSchema = object({
 	email: string()
 		.min(1, 'Email address is required')
 		.email('Email Address is invalid'),
@@ -11,8 +11,10 @@ export const loginSchema = object({
 	persist: boolean(),
 });
 
-export const defaultValues = {
+const defaultValues = {
 	email: '',
 	password: '',
 	persist: false,
 };
+
+export { loginSchema, defaultValues };

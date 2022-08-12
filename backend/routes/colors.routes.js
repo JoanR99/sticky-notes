@@ -1,5 +1,4 @@
 const { Router } = require('express');
-const router = Router();
 const {
 	getColors,
 	createColor,
@@ -7,6 +6,7 @@ const {
 } = require('../controllers/colors.controller');
 const verifyJWT = require('../middlewares/verifyJWT');
 const asyncHandler = require('../middlewares/asyncHandler');
+const router = Router();
 
 router
 	.route('/')
