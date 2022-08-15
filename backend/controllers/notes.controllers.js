@@ -1,6 +1,7 @@
 const userService = require('../services/user.services');
 const notesService = require('../services/notes.services');
 const colorService = require('../services/color.services');
+const NotFound = require('../errors/NotFound');
 
 const getNotes = async (req, res) => {
 	const id = req.user;
@@ -28,20 +29,20 @@ const createNote = async (req, res) => {
 	const user = await userService.findUserById(id);
 
 	if (!user) {
-		throw new Error('User does not exist');
+		throw new NotFound('User not found');
 	}
 
 	const color = await colorService.findById(colorId);
 
 	if (!color) {
-		throw new Error('Color does not exist');
+		throw new NotFound('Color not found');
 	}
 
 	const note = await user.createNote({ title, content });
 
 	await note.setColor(color);
 
-	res.status(200).json(note);
+	res.status(201).json(note);
 };
 
 const getNote = async (req, res) => {

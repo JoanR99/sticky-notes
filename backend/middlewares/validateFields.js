@@ -1,9 +1,8 @@
-const loginSchema = require('../validation/login.schema');
 const BadRequest = require('../errors/BadRequest');
 
-const validateLoginFields = (req, res, next) => {
+const validateFields = (validationSchema) => (req, res, next) => {
 	try {
-		const result = loginSchema.safeParse(req.body);
+		const result = validationSchema.safeParse(req.body);
 
 		if (result.success) {
 			return next();
@@ -17,4 +16,4 @@ const validateLoginFields = (req, res, next) => {
 	}
 };
 
-module.exports = validateLoginFields;
+module.exports = validateFields;

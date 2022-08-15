@@ -8,12 +8,15 @@ const {
 } = require('../controllers/notes.controllers');
 const verifyJWT = require('../middlewares/verifyJWT');
 const asyncHandler = require('../middlewares/asyncHandler');
+const {
+	validateCreateNoteFields,
+} = require('../middlewares/validation.middlewares');
 const router = Router();
 
 router
 	.route('/')
 	.get(verifyJWT, asyncHandler(getNotes))
-	.post(verifyJWT, asyncHandler(createNote));
+	.post(verifyJWT, validateCreateNoteFields, asyncHandler(createNote));
 
 router
 	.route('/:id')

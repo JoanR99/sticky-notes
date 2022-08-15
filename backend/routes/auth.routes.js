@@ -5,7 +5,9 @@ const {
 	refreshToken,
 } = require('../controllers/auth.controller');
 const asyncHandler = require('../middlewares/asyncHandler');
-const validateLoginFields = require('../middlewares/validateLoginFields');
+const {
+	validateLoginFields,
+} = require('../middlewares/validation.middlewares');
 const router = Router();
 
 router.route('/login').post(validateLoginFields, asyncHandler(login));
