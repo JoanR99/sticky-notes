@@ -24,7 +24,7 @@ const AddNoteModal = ({ handleClose, show }) => {
 	const defaultValues = {
 		title: '',
 		content: '',
-		color: 14,
+		color: 1,
 	};
 
 	const methods = useForm({

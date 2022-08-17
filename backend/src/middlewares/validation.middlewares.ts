@@ -1,0 +1,10 @@
+import validateFields from './validateFields';
+import registerSchema from '../validation/register.schema';
+import loginSchema from '../validation/login.schema';
+import createNoteSchema from '../validation/createNote.schema';
+
+export const validateRegisterFields = validateFields(registerSchema);
+
+export const validateLoginFields = validateFields(loginSchema);
+
+export const validateCreateNoteFields = validateFields(createNoteSchema);
