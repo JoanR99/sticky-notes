@@ -10,7 +10,7 @@ const createNoteSchema = z
 			required_error: 'Content is required',
 			invalid_type_error: 'Content must be a string',
 		}),
-		color: z.number({
+		colorId: z.number({
 			required_error: 'Color is required',
 			invalid_type_error: 'Color must be a number',
 		}),

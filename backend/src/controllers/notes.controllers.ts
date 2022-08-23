@@ -27,7 +27,7 @@ export const getNotes = async (req: CustomRequest, res: Response) => {
 
 export const createNote = async (req: CustomRequest, res: Response) => {
 	const id = req.user;
-	const { title, content, color: colorId } = req.body;
+	const { title, content, colorId } = req.body;
 
 	const user = await userService.findUserById(Number(id));
 
@@ -81,7 +81,7 @@ export const deleteNote = async (req: CustomRequest, res: Response) => {
 export const updateNote = async (req: CustomRequest, res: Response) => {
 	const userId = req.user;
 	const { id } = req.params;
-	const { title, content, color: colorId, isArchive } = req.body;
+	const { title, content, colorId, isArchive } = req.body;
 
 	const note = await notesService.findByIdAndUserId(Number(id), Number(userId));
 

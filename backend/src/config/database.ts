@@ -13,7 +13,7 @@ const PG_NAME: string =
 		? process.env.PG_NAME
 		: process.env.PG_TEST_NAME) ?? '';
 
-const sequelize: Sequelize =
+const sequelize =
 	process.env.NODE_ENV === 'production'
 		? new Sequelize(PG_URL, {
 				dialectOptions: {
