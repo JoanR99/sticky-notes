@@ -5,15 +5,20 @@ import * as notesService from '../services/notes.services';
 import * as colorService from '../services/color.services';
 import NotFound from '../errors/NotFound';
 import { CustomRequest } from '../middlewares/verifyJWT';
+import BadRequest from '../errors/BadRequest';
 
 export const getNotes = async (req: CustomRequest, res: Response) => {
 	const id = req.user;
 	const { isArchive } = req.query;
 
+	if (typeof isArchive === 'undefined') {
+		throw new BadRequest(['isArchive is not defined']);
+	}
+
 	const user = await userService.findUserById(Number(id));
 
 	if (!user) {
-		throw new Error('User does not exist');
+		throw new NotFound('User not found');
 	}
 
 	const notes = await user.$get('notes', {

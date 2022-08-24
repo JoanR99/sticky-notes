@@ -16,7 +16,7 @@ export const createAccessToken = (userId: number) => {
 		},
 	};
 
-	const secret = process.env.ACCESS_TOKEN_SECRET ?? '';
+	const secret = process.env.ACCESS_TOKEN_SECRET as string;
 
 	const signOptions: SignOptions = {
 		expiresIn: '1m',
@@ -32,7 +32,7 @@ export const createRefreshToken = (userId: number) => {
 		},
 	};
 
-	const secret = process.env.REFRESH_TOKEN_SECRET ?? '';
+	const secret = process.env.REFRESH_TOKEN_SECRET as string;
 
 	const signOptions: SignOptions = {
 		expiresIn: '1d',

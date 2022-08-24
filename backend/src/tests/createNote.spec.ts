@@ -21,7 +21,7 @@ type BodyCreateUser = {
 type BodyCreateNote = {
 	title?: string;
 	content?: string;
-	color?: number;
+	colorId?: number;
 };
 
 const login = (credentials = {}) =>
@@ -79,7 +79,7 @@ const VALID_CREDENTIALS = {
 const CREATE_NOTE_BODY = {
 	title: 'hello',
 	content: 'bye',
-	color: 1,
+	colorId: 1,
 };
 
 describe('Create Note', () => {
@@ -117,22 +117,22 @@ describe('Create Note', () => {
 			field        | value
 			${'title'}   | ${undefined}
 			${'content'} | ${undefined}
-			${'color'}   | ${undefined}
+			${'colorId'} | ${undefined}
 			${'title'}   | ${1}
 			${'content'} | ${1}
-			${'color'}   | ${'hello'}
+			${'colorId'} | ${'hello'}
 			${'title'}   | ${null}
 			${'content'} | ${null}
-			${'color'}   | ${null}
+			${'colorId'} | ${null}
 			${'title'}   | ${false}
 			${'content'} | ${false}
-			${'color'}   | ${false}
+			${'colorId'} | ${false}
 			${'title'}   | ${{ hi: 'bye' }}
 			${'content'} | ${{ hi: 'bye' }}
-			${'color'}   | ${{ hi: 'bye' }}
+			${'colorId'} | ${{ hi: 'bye' }}
 			${'title'}   | ${['hi']}
 			${'content'} | ${['hi']}
-			${'color'}   | ${['hi']}
+			${'colorId'} | ${['hi']}
 		`(
 			'should return status 400 on create note request when $field field is $value',
 			async ({ field, value }) => {
@@ -170,22 +170,22 @@ describe('Create Note', () => {
 			field        | value            | message
 			${'title'}   | ${undefined}     | ${'Title is required'}
 			${'content'} | ${undefined}     | ${'Content is required'}
-			${'color'}   | ${undefined}     | ${'Color is required'}
+			${'colorId'} | ${undefined}     | ${'Color is required'}
 			${'title'}   | ${1}             | ${'Title must be a string'}
 			${'content'} | ${1}             | ${'Content must be a string'}
-			${'color'}   | ${'hello'}       | ${'Color must be a number'}
+			${'colorId'} | ${'hello'}       | ${'Color must be a number'}
 			${'title'}   | ${null}          | ${'Title must be a string'}
 			${'content'} | ${null}          | ${'Content must be a string'}
-			${'color'}   | ${null}          | ${'Color must be a number'}
+			${'colorId'} | ${null}          | ${'Color must be a number'}
 			${'title'}   | ${false}         | ${'Title must be a string'}
 			${'content'} | ${false}         | ${'Content must be a string'}
-			${'color'}   | ${false}         | ${'Color must be a number'}
+			${'colorId'} | ${false}         | ${'Color must be a number'}
 			${'title'}   | ${{ hi: 'bye' }} | ${'Title must be a string'}
 			${'content'} | ${{ hi: 'bye' }} | ${'Content must be a string'}
-			${'color'}   | ${{ hi: 'bye' }} | ${'Color must be a number'}
+			${'colorId'} | ${{ hi: 'bye' }} | ${'Color must be a number'}
 			${'title'}   | ${['hi']}        | ${'Title must be a string'}
 			${'content'} | ${['hi']}        | ${'Content must be a string'}
-			${'color'}   | ${['hi']}        | ${'Color must be a number'}
+			${'colorId'} | ${['hi']}        | ${'Color must be a number'}
 		`(
 			'should return $message on create note request when $field is $value',
 			async ({ field, value, message }) => {
@@ -219,7 +219,7 @@ describe('Create Note', () => {
 			expect(response.status).toBe(404);
 		});
 
-		it('should return status 404 on create note request from unknown user', async () => {
+		it('should return error message on create note request from unknown user', async () => {
 			await createUser();
 
 			const loginResponse = await login(VALID_CREDENTIALS);
@@ -275,7 +275,7 @@ describe('Create Note', () => {
 			const color = await createColor();
 
 			const response = await createNote(
-				{ ...CREATE_NOTE_BODY, color: color.id },
+				{ ...CREATE_NOTE_BODY, colorId: color.id },
 				{
 					auth: accessToken,
 				}
@@ -294,7 +294,7 @@ describe('Create Note', () => {
 			const color = await createColor();
 
 			const response = await createNote(
-				{ ...CREATE_NOTE_BODY, color: color.id },
+				{ ...CREATE_NOTE_BODY, colorId: color.id },
 				{
 					auth: accessToken,
 				}
@@ -322,7 +322,7 @@ describe('Create Note', () => {
 			const color = await createColor();
 
 			const createdNote = await createNote(
-				{ ...CREATE_NOTE_BODY, color: color.id },
+				{ ...CREATE_NOTE_BODY, colorId: color.id },
 				{
 					auth: accessToken,
 				}
@@ -345,7 +345,7 @@ describe('Create Note', () => {
 			const color = await createColor();
 
 			const createdNote = await createNote(
-				{ ...CREATE_NOTE_BODY, color: color.id },
+				{ ...CREATE_NOTE_BODY, colorId: color.id },
 				{
 					auth: accessToken,
 				}
@@ -368,7 +368,7 @@ describe('Create Note', () => {
 			const color = await createColor();
 
 			const createdNote = await createNote(
-				{ ...CREATE_NOTE_BODY, color: color.id },
+				{ ...CREATE_NOTE_BODY, colorId: color.id },
 				{
 					auth: accessToken,
 				}

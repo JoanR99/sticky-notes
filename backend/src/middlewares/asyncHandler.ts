@@ -9,7 +9,6 @@ const asyncHandler =
 		try {
 			await callback(req as CustomRequest, res, next);
 		} catch (e) {
-			console.log(e);
 			next(e);
 		}
 	};
