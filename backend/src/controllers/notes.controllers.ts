@@ -76,7 +76,7 @@ export const deleteNote = async (req: CustomRequest, res: Response) => {
 
 	const note = await notesService.findByIdAndUserId(Number(id), Number(userId));
 
-	if (!note) throw new Error('Note not found');
+	if (!note) throw new NotFound('Note not found');
 
 	await notesService.deleteNote(Number(id));
 
@@ -91,7 +91,7 @@ export const updateNote = async (req: CustomRequest, res: Response) => {
 	const note = await notesService.findByIdAndUserId(Number(id), Number(userId));
 
 	if (!note) {
-		throw new Error('You can not update a note of another user');
+		throw new NotFound('Note not found');
 	}
 
 	if (typeof isArchive === 'undefined') {
@@ -99,7 +99,7 @@ export const updateNote = async (req: CustomRequest, res: Response) => {
 			const newColor = await colorService.findById(colorId);
 
 			if (!newColor) {
-				throw new Error('Color does not exist');
+				throw new NotFound('Color not found');
 			}
 
 			await note.$set('color', newColor);

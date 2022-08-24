@@ -59,27 +59,14 @@ const createUser = async (
 const createColor = (body = { name: 'white', hex: '#fffffff' }) =>
 	Color.create(body);
 
-const getNotes = (options: RequestOptions = {}) => {
-	const query =
-		typeof options.isArchive === 'undefined'
-			? ''
-			: `?isArchive=${options.isArchive}`;
-	const agent = request(app).get(`/api/notes${query}`);
+const deleteNotes = (id: number = 1, options: RequestOptions = {}) => {
+	const agent = request(app).delete(`/api/notes/${id}`);
 
 	if ('auth' in options) {
 		agent.set('Authorization', `Bearer ${options.auth}`);
 	}
 
 	return agent.send();
-};
-
-const updateIsArchive = async (id: number, isArchive: boolean = true) => {
-	const note = await Note.findOne({ where: { id } });
-
-	if (note) {
-		note.isArchive = isArchive;
-		await note.save();
-	}
 };
 
 beforeAll(async () => {
@@ -106,23 +93,23 @@ const CREATE_NOTE_BODY = {
 	colorId: 1,
 };
 
-describe('Get Notes', () => {
+describe('Delete Note', () => {
 	describe('Failing cases', () => {
-		it('should return status 401 on get note request without accessToken', async () => {
-			const response = await getNotes();
+		it('should return status 401 on delete note request without accessToken', async () => {
+			const response = await deleteNotes();
 
 			expect(response.status).toBe(401);
 		});
 
-		it('should return status 403 on get note request with invalid accessToken', async () => {
-			const response = await getNotes({
+		it('should return status 403 on delete note request with invalid accessToken', async () => {
+			const response = await deleteNotes(1, {
 				auth: 'invalid-token',
 			});
 
 			expect(response.status).toBe(403);
 		});
 
-		it('should return status 404 on get note request with invalid user', async () => {
+		it('should return status 404 on delete note request with invalid user', async () => {
 			const secret = process.env.ACCESS_TOKEN_SECRET as string;
 
 			const payload = {
@@ -137,15 +124,14 @@ describe('Get Notes', () => {
 
 			const accessToken = jwt.sign(payload, secret, signOptions);
 
-			const response = await getNotes({
+			const response = await deleteNotes(1, {
 				auth: accessToken,
-				isArchive: false,
 			});
 
 			expect(response.status).toBe(404);
 		});
 
-		it('should return message User not found on get note request with invalid user', async () => {
+		it('should return message Note not found on delete note request with invalid user', async () => {
 			const secret = process.env.ACCESS_TOKEN_SECRET as string;
 
 			const payload = {
@@ -160,60 +146,67 @@ describe('Get Notes', () => {
 
 			const accessToken = jwt.sign(payload, secret, signOptions);
 
-			const response = await getNotes({
+			const response = await deleteNotes(1, {
 				auth: accessToken,
-				isArchive: false,
 			});
 
-			expect(response.body.errorMessage).toBe('User not found');
+			expect(response.body.errorMessage).toBe('Note not found');
 		});
 
-		it('should return status 400 on get note request without isArchive query', async () => {
+		it('should return status 404 on delete note request with invalid note', async () => {
 			await createUser();
 
 			const loginResponse = await login(VALID_CREDENTIALS);
 
 			const accessToken = loginResponse.body.accessToken;
 
-			const response = await getNotes({
+			const response = await deleteNotes(1, {
 				auth: accessToken,
 			});
 
-			expect(response.status).toBe(400);
+			expect(response.status).toBe(404);
 		});
 
-		it('should return isArchive is undefined on get note request without isArchive query', async () => {
+		it('should return message Note not found on delete note request with invalid note', async () => {
 			await createUser();
 
 			const loginResponse = await login(VALID_CREDENTIALS);
 
 			const accessToken = loginResponse.body.accessToken;
 
-			const response = await getNotes({
+			const response = await deleteNotes(1, {
 				auth: accessToken,
 			});
 
-			expect(response.body.errorMessage).toEqual(['isArchive is not defined']);
+			expect(response.body.errorMessage).toBe('Note not found');
 		});
 	});
 
-	describe('Success cases', () => {
-		it('should return status 200 on get note request success', async () => {
+	describe('Success Cases', () => {
+		it('should return status 200 on delete note request success', async () => {
 			await createUser();
 
 			const loginResponse = await login(VALID_CREDENTIALS);
 
 			const accessToken = loginResponse.body.accessToken;
 
-			const response = await getNotes({
+			const color = await createColor();
+
+			const cratedNote = await createNote(
+				{ ...CREATE_NOTE_BODY, colorId: color.id },
+				{
+					auth: accessToken,
+				}
+			);
+
+			const response = await deleteNotes(cratedNote.body.id, {
 				auth: accessToken,
-				isArchive: false,
 			});
 
 			expect(response.status).toBe(200);
 		});
 
-		it('should return array of notes on get note request success', async () => {
+		it('should return message Note deleted successfully on delete note request success', async () => {
 			await createUser();
 
 			const loginResponse = await login(VALID_CREDENTIALS);
@@ -222,22 +215,21 @@ describe('Get Notes', () => {
 
 			const color = await createColor();
 
-			await createNote(
+			const cratedNote = await createNote(
 				{ ...CREATE_NOTE_BODY, colorId: color.id },
 				{
 					auth: accessToken,
 				}
 			);
 
-			const response = await getNotes({
+			const response = await deleteNotes(cratedNote.body.id, {
 				auth: accessToken,
-				isArchive: false,
 			});
 
-			expect(response.body.length).toBe(1);
+			expect(response.body.message).toBe('Note deleted successfully');
 		});
 
-		it('should return only array of unarchive notes on get note request success when isArchive query is set to false', async () => {
+		it('should delete note on delete note request success', async () => {
 			await createUser();
 
 			const loginResponse = await login(VALID_CREDENTIALS);
@@ -246,45 +238,20 @@ describe('Get Notes', () => {
 
 			const color = await createColor();
 
-			await createNote(
+			const cratedNote = await createNote(
 				{ ...CREATE_NOTE_BODY, colorId: color.id },
 				{
 					auth: accessToken,
 				}
 			);
 
-			const response = await getNotes({
+			await deleteNotes(cratedNote.body.id, {
 				auth: accessToken,
-				isArchive: false,
 			});
 
-			expect(response.body[0].isArchive).toBe(false);
-		});
+			const note = await Note.findOne({ where: { id: cratedNote.body.id } });
 
-		it('should return only array of archived notes on get note request success when isArchive query is set to true', async () => {
-			await createUser();
-
-			const loginResponse = await login(VALID_CREDENTIALS);
-
-			const accessToken = loginResponse.body.accessToken;
-
-			const color = await createColor();
-
-			const createdNote = await createNote(
-				{ ...CREATE_NOTE_BODY, colorId: color.id },
-				{
-					auth: accessToken,
-				}
-			);
-
-			await updateIsArchive(createdNote.body.id);
-
-			const response = await getNotes({
-				auth: accessToken,
-				isArchive: true,
-			});
-
-			expect(response.body[0].isArchive).toBe(true);
+			expect(note).toBeNull();
 		});
 	});
 });
