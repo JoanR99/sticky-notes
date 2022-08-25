@@ -12,7 +12,7 @@ export const createColor: RequestHandler = async (req, res) => {
 	const { name, hex } = req.body;
 	const color = await colorService.createColor(name, hex);
 
-	res.json(color);
+	res.status(201).json(color);
 };
 
 export const deleteColor: RequestHandler = async (req, res) => {

@@ -7,13 +7,14 @@ import {
 } from '../controllers/colors.controller';
 import { verifyJWT } from '../middlewares/verifyJWT';
 import asyncHandler from '../middlewares/asyncHandler';
+import { validateCreateColorFields } from '../middlewares/validation.middlewares';
 
 const router = Router();
 
 router
 	.route('/')
 	.get(verifyJWT, asyncHandler(getColors))
-	.post(verifyJWT, asyncHandler(createColor));
+	.post(verifyJWT, validateCreateColorFields, asyncHandler(createColor));
 
 router.route('/:id').delete(verifyJWT, asyncHandler(deleteColor));
 

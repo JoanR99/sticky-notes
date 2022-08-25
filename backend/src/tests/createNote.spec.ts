@@ -9,7 +9,6 @@ import Color from '../models/color';
 
 type RequestOptions = {
 	auth?: string;
-	language?: string;
 };
 
 type BodyCreateUser = {
