@@ -1,4 +1,5 @@
 import { RequestHandler } from 'express';
+import NotFound from '../errors/NotFound';
 
 import * as colorService from '../services/color.services';
 
@@ -17,6 +18,11 @@ export const createColor: RequestHandler = async (req, res) => {
 
 export const deleteColor: RequestHandler = async (req, res) => {
 	const { id } = req.params;
+
+	const color = await colorService.findById(Number(id));
+
+	if (!color) throw new NotFound('Color not found');
+
 	await colorService.deleteColor(Number(id));
 
 	res.json({ message: 'Color deleted successfully' });
