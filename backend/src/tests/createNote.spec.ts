@@ -2,34 +2,16 @@ import request from 'supertest';
 import bcrypt from 'bcrypt';
 
 import app from '../app';
-import sequelize from '../config/database';
-import User from '../models/user';
-import Note from '../models/note';
-import Color from '../models/color';
+import { prisma } from '../../prisma';
 
 type RequestOptions = {
 	auth?: string;
 };
 
-type BodyCreateUser = {
-	username?: string;
-	email?: string;
-	password?: string;
-};
-
-type BodyCreateNote = {
-	title?: string;
-	content?: string;
-	colorId?: number;
-};
-
 const login = (credentials = {}) =>
 	request(app).post('/api/auth/login').send(credentials);
 
-const createNote = (
-	body: BodyCreateNote = {},
-	options: RequestOptions = {}
-) => {
+const createNote = (body = {}, options: RequestOptions = {}) => {
 	const agent = request(app).post('/api/notes');
 
 	if ('auth' in options) {
@@ -40,7 +22,7 @@ const createNote = (
 };
 
 const createUser = async (
-	body: BodyCreateUser = {
+	body = {
 		username: 'user',
 		email: 'user@testing.com',
 		password: 'P4ssw0rd',
@@ -51,24 +33,11 @@ const createUser = async (
 		body.password = hash;
 	}
 
-	return User.create(body);
+	return prisma.user.create({ data: body });
 };
 
 const createColor = (body = { name: 'white', hex: '#fffffff' }) =>
-	Color.create(body);
-
-beforeAll(async () => {
-	await sequelize.sync();
-});
-
-beforeEach(async () => {
-	await User.destroy({ truncate: true, cascade: true });
-	await Color.destroy({ truncate: true, cascade: true });
-});
-
-afterAll(async () => {
-	await sequelize.close();
-});
+	prisma.color.create({ data: body });
 
 const VALID_CREDENTIALS = {
 	email: 'user@testing.com',
@@ -141,7 +110,7 @@ describe('Create Note', () => {
 
 				const accessToken = loginResponse.body.accessToken;
 
-				const body: BodyCreateNote = { ...CREATE_NOTE_BODY, [field]: value };
+				const body = { ...CREATE_NOTE_BODY, [field]: value };
 
 				const response = await createNote(body, { auth: accessToken });
 
@@ -194,7 +163,7 @@ describe('Create Note', () => {
 
 				const accessToken = loginResponse.body.accessToken;
 
-				const body: BodyCreateNote = { ...CREATE_NOTE_BODY, [field]: value };
+				const body = { ...CREATE_NOTE_BODY, [field]: value };
 
 				const response = await createNote(body, { auth: accessToken });
 
@@ -209,7 +178,7 @@ describe('Create Note', () => {
 
 			const accessToken = loginResponse.body.accessToken;
 
-			await User.destroy({ where: { email: VALID_CREDENTIALS.email } });
+			await prisma.user.delete({ where: { email: VALID_CREDENTIALS.email } });
 
 			const response = await createNote(CREATE_NOTE_BODY, {
 				auth: accessToken,
@@ -225,7 +194,7 @@ describe('Create Note', () => {
 
 			const accessToken = loginResponse.body.accessToken;
 
-			await User.destroy({ where: { email: VALID_CREDENTIALS.email } });
+			await prisma.user.delete({ where: { email: VALID_CREDENTIALS.email } });
 
 			const response = await createNote(CREATE_NOTE_BODY, {
 				auth: accessToken,
@@ -301,13 +270,14 @@ describe('Create Note', () => {
 
 			expect(Object.keys(response.body)).toEqual([
 				'id',
+				'createdAt',
+				'updatedAt',
 				'title',
 				'content',
 				'isArchive',
-				'userId',
-				'updatedAt',
-				'createdAt',
+				'authorId',
 				'colorId',
+				'color',
 			]);
 		});
 
@@ -327,7 +297,7 @@ describe('Create Note', () => {
 				}
 			);
 
-			const noteInDb = await Note.findOne({
+			const noteInDb = await prisma.note.findUnique({
 				where: { id: createdNote.body.id },
 			});
 
@@ -350,11 +320,11 @@ describe('Create Note', () => {
 				}
 			);
 
-			const noteInDb = await Note.findOne({
+			const noteInDb = await prisma.note.findUnique({
 				where: { id: createdNote.body.id },
 			});
 
-			expect(user.id).toBe(noteInDb?.userId);
+			expect(user.id).toBe(noteInDb?.authorId);
 		});
 
 		it('should save note in database with his corresponding colorId on create note request success', async () => {
@@ -373,7 +343,7 @@ describe('Create Note', () => {
 				}
 			);
 
-			const noteInDb = await Note.findOne({
+			const noteInDb = await prisma.note.findUnique({
 				where: { id: createdNote.body.id },
 			});
 

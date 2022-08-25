@@ -11,6 +11,8 @@ export const getNotes = async (req: CustomRequest, res: Response) => {
 	const id = req.user;
 	const { isArchive } = req.query;
 
+	const booleanIsArchive: boolean = isArchive == 'false' ? false : true;
+
 	if (typeof isArchive === 'undefined') {
 		throw new BadRequest(['isArchive is not defined']);
 	}
@@ -21,11 +23,12 @@ export const getNotes = async (req: CustomRequest, res: Response) => {
 		throw new NotFound('User not found');
 	}
 
-	const notes = await user.$get('notes', {
-		where: { isArchive },
-		order: [['updatedAt', 'DESC']],
-		include: 'color',
-	});
+	const notes = await notesService.findByUserIdAndIsArchive(
+		user.id,
+		booleanIsArchive
+	);
+
+	console.log(notes);
 
 	res.status(200).json(notes);
 };
@@ -46,13 +49,7 @@ export const createNote = async (req: CustomRequest, res: Response) => {
 		throw new NotFound('Color not found');
 	}
 
-	const note = await user.$create('note', {
-		title,
-		content,
-		isArchive: false,
-	});
-
-	await color.$add('note', note);
+	const note = await notesService.createNote(title, content, color.id, user.id);
 
 	res.status(201).json(note);
 };
@@ -102,15 +99,12 @@ export const updateNote = async (req: CustomRequest, res: Response) => {
 				throw new NotFound('Color not found');
 			}
 
-			await note.$set('color', newColor);
+			await notesService.connectColor(note.id, newColor.id);
 		}
 
-		note.title = title;
-		note.content = content;
-		await note.save();
+		await notesService.updateNote(note.id, title, content);
 	} else {
-		note.isArchive = isArchive;
-		await note.save();
+		await notesService.updateIsArchive(note.id, Boolean(isArchive));
 	}
 
 	return res.status(200).json({ message: 'Note updated successfully' });

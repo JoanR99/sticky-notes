@@ -1,12 +1,12 @@
-import Color from '../models/color';
+import { prisma } from '../../prisma';
 
 export const findById = async (id: number) =>
-	await Color.findOne({ where: { id } });
+	await prisma.color.findUnique({ where: { id } });
 
-export const findAll = async () => await Color.findAll({});
+export const findAll = async () => await prisma.color.findMany();
 
 export const createColor = async (name: string, hex: string) =>
-	await Color.create({ name, hex });
+	await prisma.color.create({ data: { name, hex } });
 
 export const deleteColor = async (id: number) =>
-	await Color.destroy({ where: { id } });
+	await prisma.color.delete({ where: { id } });

@@ -3,35 +3,17 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 import app from '../app';
-import sequelize from '../config/database';
-import User from '../models/user';
-import Color from '../models/color';
-import Note from '../models/note';
+import { prisma } from '../../prisma';
 
 type RequestOptions = {
 	auth?: string;
 	isArchive?: boolean;
 };
 
-type BodyCreateUser = {
-	username?: string;
-	email?: string;
-	password?: string;
-};
-
-type BodyCreateNote = {
-	title?: string;
-	content?: string;
-	colorId?: number;
-};
-
 const login = (credentials = {}) =>
 	request(app).post('/api/auth/login').send(credentials);
 
-const createNote = (
-	body: BodyCreateNote = {},
-	options: RequestOptions = {}
-) => {
+const createNote = (body = {}, options: RequestOptions = {}) => {
 	const agent = request(app).post('/api/notes');
 
 	if ('auth' in options) {
@@ -42,7 +24,7 @@ const createNote = (
 };
 
 const createUser = async (
-	body: BodyCreateUser = {
+	body = {
 		username: 'user',
 		email: 'user@testing.com',
 		password: 'P4ssw0rd',
@@ -53,13 +35,13 @@ const createUser = async (
 		body.password = hash;
 	}
 
-	return User.create(body);
+	return prisma.user.create({ data: body });
 };
 
 const createColor = (body = { name: 'white', hex: '#fffffff' }) =>
-	Color.create(body);
+	prisma.color.create({ data: body });
 
-const updateNotes = (
+const updateNote = (
 	id: number = 1,
 	body = {},
 	options: RequestOptions = {}
@@ -72,19 +54,6 @@ const updateNotes = (
 
 	return agent.send(body);
 };
-
-beforeAll(async () => {
-	await sequelize.sync();
-});
-
-beforeEach(async () => {
-	await User.destroy({ truncate: true, cascade: true });
-	await Color.destroy({ truncate: true, cascade: true });
-});
-
-afterAll(async () => {
-	await sequelize.close();
-});
 
 const VALID_CREDENTIALS = {
 	email: 'user@testing.com',
@@ -100,13 +69,13 @@ const CREATE_NOTE_BODY = {
 describe('Update Note', () => {
 	describe('Failing cases', () => {
 		it('should return status 401 on update note request without accessToken', async () => {
-			const response = await updateNotes();
+			const response = await updateNote();
 
 			expect(response.status).toBe(401);
 		});
 
 		it('should return status 403 on update note request with invalid accessToken', async () => {
-			const response = await updateNotes(
+			const response = await updateNote(
 				1,
 				{},
 				{
@@ -132,7 +101,7 @@ describe('Update Note', () => {
 
 			const accessToken = jwt.sign(payload, secret, signOptions);
 
-			const response = await updateNotes(
+			const response = await updateNote(
 				1,
 				{},
 				{
@@ -158,7 +127,7 @@ describe('Update Note', () => {
 
 			const accessToken = jwt.sign(payload, secret, signOptions);
 
-			const response = await updateNotes(
+			const response = await updateNote(
 				1,
 				{},
 				{
@@ -176,7 +145,7 @@ describe('Update Note', () => {
 
 			const accessToken = loginResponse.body.accessToken;
 
-			const response = await updateNotes(
+			const response = await updateNote(
 				1,
 				{},
 				{
@@ -194,7 +163,7 @@ describe('Update Note', () => {
 
 			const accessToken = loginResponse.body.accessToken;
 
-			const response = await updateNotes(
+			const response = await updateNote(
 				1,
 				{},
 				{
@@ -221,7 +190,7 @@ describe('Update Note', () => {
 				}
 			);
 
-			const response = await updateNotes(
+			const response = await updateNote(
 				createdNote.body.id,
 				{ title: 'hello', content: 'bye', colorId: 9 },
 				{
@@ -248,7 +217,7 @@ describe('Update Note', () => {
 				}
 			);
 
-			const response = await updateNotes(
+			const response = await updateNote(
 				createdNote.body.id,
 				{ title: 'hello', content: 'bye', colorId: 9 },
 				{
@@ -270,15 +239,15 @@ describe('Update Note', () => {
 
 			const color = await createColor();
 
-			const cratedNote = await createNote(
+			const createdNote = await createNote(
 				{ ...CREATE_NOTE_BODY, colorId: color.id },
 				{
 					auth: accessToken,
 				}
 			);
 
-			const response = await updateNotes(
-				cratedNote.body.id,
+			const response = await updateNote(
+				createdNote.body.id,
 				{ title: 'nice', content: 'yes', colorId: color.id },
 				{
 					auth: accessToken,
@@ -297,15 +266,15 @@ describe('Update Note', () => {
 
 			const color = await createColor();
 
-			const cratedNote = await createNote(
+			const createdNote = await createNote(
 				{ ...CREATE_NOTE_BODY, colorId: color.id },
 				{
 					auth: accessToken,
 				}
 			);
 
-			const response = await updateNotes(
-				cratedNote.body.id,
+			const response = await updateNote(
+				createdNote.body.id,
 				{ title: 'nice', content: 'yes', colorId: color.id },
 				{
 					auth: accessToken,
@@ -324,24 +293,28 @@ describe('Update Note', () => {
 
 			const color = await createColor();
 
-			const cratedNote = await createNote(
+			const createdNote = await createNote(
 				{ ...CREATE_NOTE_BODY, colorId: color.id },
 				{
 					auth: accessToken,
 				}
 			);
 
+			console.log(createdNote.body);
+
 			const newColor = await createColor({ name: 'black', hex: '#000000' });
 
-			await updateNotes(
-				cratedNote.body.id,
+			await updateNote(
+				createdNote.body.id,
 				{ title: 'nice', content: 'yes', colorId: newColor.id },
 				{
 					auth: accessToken,
 				}
 			);
 
-			const note = await Note.findOne({ where: { id: cratedNote.body.id } });
+			const note = await prisma.note.findUnique({
+				where: { id: createdNote.body.id },
+			});
 
 			expect(note?.title).toBe('nice');
 			expect(note?.content).toBe('yes');
@@ -357,22 +330,24 @@ describe('Update Note', () => {
 
 			const color = await createColor();
 
-			const cratedNote = await createNote(
+			const createdNote = await createNote(
 				{ ...CREATE_NOTE_BODY, colorId: color.id },
 				{
 					auth: accessToken,
 				}
 			);
 
-			await updateNotes(
-				cratedNote.body.id,
+			await updateNote(
+				createdNote.body.id,
 				{ isArchive: true },
 				{
 					auth: accessToken,
 				}
 			);
 
-			const note = await Note.findOne({ where: { id: cratedNote.body.id } });
+			const note = await prisma.note.findUnique({
+				where: { id: createdNote.body.id },
+			});
 
 			expect(note?.isArchive).toBe(true);
 		});

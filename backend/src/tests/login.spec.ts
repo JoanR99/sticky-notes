@@ -2,8 +2,7 @@ import request from 'supertest';
 import bcrypt from 'bcrypt';
 
 import app from '../app';
-import sequelize from '../config/database';
-import User from '../models/user';
+import { prisma } from '../../prisma';
 
 const VALID_CREDENTIALS = {
 	email: 'user@testing.com',
@@ -17,20 +16,8 @@ const createUser = async (
 	credentials = { ...VALID_CREDENTIALS, username: 'user' }
 ) => {
 	credentials.password = await bcrypt.hash(credentials.password, 10);
-	return User.create(credentials);
+	return prisma.user.create({ data: credentials });
 };
-
-beforeAll(async () => {
-	await sequelize.sync();
-});
-
-beforeEach(async () => {
-	await User.destroy({ truncate: true, cascade: true });
-});
-
-afterAll(async () => {
-	await sequelize.close();
-});
 
 describe('Login', () => {
 	describe('Failing cases', () => {
@@ -154,7 +141,7 @@ describe('Login', () => {
 
 			await login(VALID_CREDENTIALS);
 
-			const user = await User.findOne({
+			const user = await prisma.user.findUnique({
 				where: { email: VALID_CREDENTIALS.email },
 			});
 

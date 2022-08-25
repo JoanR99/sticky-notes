@@ -1,23 +1,10 @@
 import request from 'supertest';
 
 import app from '../app';
-import sequelize from '../config/database';
-import User from '../models/user';
+import { prisma } from '../../prisma';
 
 const register = (credentials = {}) =>
 	request(app).post('/api/users/register').send(credentials);
-
-beforeAll(async () => {
-	await sequelize.sync();
-});
-
-beforeEach(async () => {
-	await User.destroy({ truncate: true, cascade: true });
-});
-
-afterAll(async () => {
-	await sequelize.close();
-});
 
 const VALID_CREDENTIALS = {
 	username: 'user',
@@ -187,7 +174,7 @@ describe('Register', () => {
 		it('should save user in database on valid register request', async () => {
 			await register(VALID_CREDENTIALS);
 
-			const userList = await User.findAll();
+			const userList = await prisma.user.findMany();
 
 			expect(userList.length).toBe(1);
 		});
@@ -195,7 +182,7 @@ describe('Register', () => {
 		it('should save username and email in database on valid register request', async () => {
 			await register(VALID_CREDENTIALS);
 
-			const userList = await User.findAll();
+			const userList = await prisma.user.findMany();
 
 			expect(userList[0].username).toBe(VALID_CREDENTIALS.username);
 			expect(userList[0].email).toBe(VALID_CREDENTIALS.email);
@@ -204,7 +191,7 @@ describe('Register', () => {
 		it('should hash the password in the database', async () => {
 			await register(VALID_CREDENTIALS);
 
-			const userList = await User.findAll();
+			const userList = await prisma.user.findMany();
 
 			expect(userList[0].username).not.toBe(VALID_CREDENTIALS.password);
 		});

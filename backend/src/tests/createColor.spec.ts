@@ -2,32 +2,16 @@ import request from 'supertest';
 import bcrypt from 'bcrypt';
 
 import app from '../app';
-import sequelize from '../config/database';
-import User from '../models/user';
-import Color from '../models/color';
+import { prisma } from '../../prisma';
 
 type RequestOptions = {
 	auth?: string;
 };
 
-type BodyCreateUser = {
-	username?: string;
-	email?: string;
-	password?: string;
-};
-
-type BodyCreateColor = {
-	name?: string;
-	hex?: string;
-};
-
 const login = (credentials = {}) =>
 	request(app).post('/api/auth/login').send(credentials);
 
-const createColor = (
-	body: BodyCreateColor = {},
-	options: RequestOptions = {}
-) => {
+const createColor = (body = {}, options: RequestOptions = {}) => {
 	const agent = request(app).post('/api/colors');
 
 	if ('auth' in options) {
@@ -38,7 +22,7 @@ const createColor = (
 };
 
 const createUser = async (
-	body: BodyCreateUser = {
+	body = {
 		username: 'user',
 		email: 'user@testing.com',
 		password: 'P4ssw0rd',
@@ -49,28 +33,15 @@ const createUser = async (
 		body.password = hash;
 	}
 
-	return User.create(body);
+	return prisma.user.create({ data: body });
 };
-
-beforeAll(async () => {
-	await sequelize.sync();
-});
-
-beforeEach(async () => {
-	await User.destroy({ truncate: true, cascade: true });
-	await Color.destroy({ truncate: true, cascade: true });
-});
-
-afterAll(async () => {
-	await sequelize.close();
-});
 
 const VALID_CREDENTIALS = {
 	email: 'user@testing.com',
 	password: 'P4ssw0rd',
 };
 
-const CREATE_COLOR_BODY: BodyCreateColor = {
+const CREATE_COLOR_BODY = {
 	name: 'white',
 	hex: '#ffffff',
 };
@@ -129,7 +100,7 @@ describe('Create Color', () => {
 
 				const accessToken = loginResponse.body.accessToken;
 
-				const body: BodyCreateColor = { ...CREATE_COLOR_BODY, [field]: value };
+				const body = { ...CREATE_COLOR_BODY, [field]: value };
 
 				const response = await createColor(body, { auth: accessToken });
 
@@ -175,7 +146,7 @@ describe('Create Color', () => {
 
 				const accessToken = loginResponse.body.accessToken;
 
-				const body: BodyCreateColor = { ...CREATE_COLOR_BODY, [field]: value };
+				const body = { ...CREATE_COLOR_BODY, [field]: value };
 
 				const response = await createColor(body, { auth: accessToken });
 
@@ -212,10 +183,10 @@ describe('Create Color', () => {
 
 			expect(Object.keys(response.body)).toEqual([
 				'id',
+				'createdAt',
+				'updatedAt',
 				'name',
 				'hex',
-				'updatedAt',
-				'createdAt',
 			]);
 		});
 
@@ -230,7 +201,7 @@ describe('Create Color', () => {
 				auth: accessToken,
 			});
 
-			const colorInDb = await Color.findOne({
+			const colorInDb = await prisma.color.findUnique({
 				where: { id: createdColor.body.id },
 			});
 

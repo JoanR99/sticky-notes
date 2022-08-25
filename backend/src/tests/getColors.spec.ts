@@ -2,28 +2,17 @@ import request from 'supertest';
 import bcrypt from 'bcrypt';
 
 import app from '../app';
-import sequelize from '../config/database';
-import User from '../models/user';
-import Color from '../models/color';
+import { prisma } from '../../prisma';
 
 type RequestOptions = {
 	auth?: string;
 };
 
-type BodyCreateUser = {
-	username?: string;
-	email?: string;
-	password?: string;
-};
-
 const login = (credentials = {}) =>
 	request(app).post('/api/auth/login').send(credentials);
 
-const createColor = (body = { name: 'white', hex: '#fffffff' }) =>
-	Color.create(body);
-
 const createUser = async (
-	body: BodyCreateUser = {
+	body = {
 		username: 'user',
 		email: 'user@testing.com',
 		password: 'P4ssw0rd',
@@ -34,8 +23,11 @@ const createUser = async (
 		body.password = hash;
 	}
 
-	return User.create(body);
+	return prisma.user.create({ data: body });
 };
+
+const createColor = (body = { name: 'white', hex: '#fffffff' }) =>
+	prisma.color.create({ data: body });
 
 const getColors = (options: RequestOptions = {}) => {
 	const agent = request(app).get(`/api/colors`);
@@ -46,19 +38,6 @@ const getColors = (options: RequestOptions = {}) => {
 
 	return agent.send();
 };
-
-beforeAll(async () => {
-	await sequelize.sync();
-});
-
-beforeEach(async () => {
-	await User.destroy({ truncate: true, cascade: true });
-	await Color.destroy({ truncate: true, cascade: true });
-});
-
-afterAll(async () => {
-	await sequelize.close();
-});
 
 const VALID_CREDENTIALS = {
 	email: 'user@testing.com',

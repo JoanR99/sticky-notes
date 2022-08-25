@@ -1,9 +1,8 @@
 import bcrypt from 'bcrypt';
-
-import User from '../models/user';
+import { prisma } from '../../prisma';
 
 export const findUserByEmail = async (email: string) =>
-	await User.findOne({ where: { email } });
+	await prisma.user.findUnique({ where: { email } });
 
 export const createUser = async (
 	username: string,
@@ -11,11 +10,20 @@ export const createUser = async (
 	password: string
 ) => {
 	const hash = await bcrypt.hash(password, 10);
-	await User.create({ username, email, password: hash });
+	await prisma.user.create({
+		data: {
+			email,
+			username,
+			password: hash,
+		},
+	});
 };
 
 export const findUserByRefreshToken = async (refreshToken: string) =>
-	await User.findOne({ where: { refreshToken } });
+	await prisma.user.findFirst({ where: { refreshToken } });
 
 export const findUserById = async (id: number) =>
-	await User.findOne({ where: { id } });
+	await prisma.user.findUnique({ where: { id } });
+
+export const updateRefreshToken = async (id: number, refreshToken: string) =>
+	await prisma.user.update({ where: { id }, data: { refreshToken } });

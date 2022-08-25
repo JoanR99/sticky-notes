@@ -3,35 +3,17 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 import app from '../app';
-import sequelize from '../config/database';
-import User from '../models/user';
-import Color from '../models/color';
-import Note from '../models/note';
+import { prisma } from '../../prisma';
 
 type RequestOptions = {
 	auth?: string;
 	isArchive?: boolean;
 };
 
-type BodyCreateUser = {
-	username?: string;
-	email?: string;
-	password?: string;
-};
-
-type BodyCreateNote = {
-	title?: string;
-	content?: string;
-	colorId?: number;
-};
-
 const login = (credentials = {}) =>
 	request(app).post('/api/auth/login').send(credentials);
 
-const createNote = (
-	body: BodyCreateNote = {},
-	options: RequestOptions = {}
-) => {
+const createNote = (body = {}, options: RequestOptions = {}) => {
 	const agent = request(app).post('/api/notes');
 
 	if ('auth' in options) {
@@ -42,7 +24,7 @@ const createNote = (
 };
 
 const createUser = async (
-	body: BodyCreateUser = {
+	body = {
 		username: 'user',
 		email: 'user@testing.com',
 		password: 'P4ssw0rd',
@@ -53,11 +35,11 @@ const createUser = async (
 		body.password = hash;
 	}
 
-	return User.create(body);
+	return prisma.user.create({ data: body });
 };
 
 const createColor = (body = { name: 'white', hex: '#fffffff' }) =>
-	Color.create(body);
+	prisma.color.create({ data: body });
 
 const deleteNotes = (id: number = 1, options: RequestOptions = {}) => {
 	const agent = request(app).delete(`/api/notes/${id}`);
@@ -68,19 +50,6 @@ const deleteNotes = (id: number = 1, options: RequestOptions = {}) => {
 
 	return agent.send();
 };
-
-beforeAll(async () => {
-	await sequelize.sync();
-});
-
-beforeEach(async () => {
-	await User.destroy({ truncate: true, cascade: true });
-	await Color.destroy({ truncate: true, cascade: true });
-});
-
-afterAll(async () => {
-	await sequelize.close();
-});
 
 const VALID_CREDENTIALS = {
 	email: 'user@testing.com',
@@ -249,7 +218,9 @@ describe('Delete Note', () => {
 				auth: accessToken,
 			});
 
-			const note = await Note.findOne({ where: { id: cratedNote.body.id } });
+			const note = await prisma.note.findUnique({
+				where: { id: cratedNote.body.id },
+			});
 
 			expect(note).toBeNull();
 		});

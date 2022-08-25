@@ -21,8 +21,7 @@ export const login: RequestHandler = async (req, res) => {
 			const accessToken = authService.createAccessToken(user.id);
 			const refreshToken = authService.createRefreshToken(user.id);
 
-			user.refreshToken = refreshToken;
-			await user.save();
+			await userService.updateRefreshToken(user.id, refreshToken);
 
 			res
 				.cookie('jwt', refreshToken, {
@@ -57,8 +56,7 @@ export const logout: RequestHandler = async (req, res) => {
 		return res.sendStatus(204);
 	}
 
-	user.refreshToken = '';
-	await user.save();
+	await userService.updateRefreshToken(user.id, '');
 
 	res.clearCookie('jwt', {
 		httpOnly: true,
@@ -82,7 +80,7 @@ export const refreshToken: RequestHandler = async (req, res) => {
 
 		if (!user) return res.sendStatus(403);
 
-		const secretToken = process.env.REFRESH_TOKEN_SECRET ?? '';
+		const secretToken = process.env.REFRESH_TOKEN_SECRET as string;
 
 		const tokenPayload = await authService.validateToken(
 			refreshToken,
