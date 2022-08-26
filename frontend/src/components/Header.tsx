@@ -26,7 +26,7 @@ const Header = () => {
 					}}
 				>
 					<Typography variant="h6" noWrap component="div">
-						<LinkItem to="/">MUI</LinkItem>
+						<LinkItem to="/">Sticky Notes</LinkItem>
 					</Typography>
 					<Box>{accessToken && <Logout />}</Box>
 				</Toolbar>

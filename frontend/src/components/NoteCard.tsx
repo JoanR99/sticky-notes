@@ -15,6 +15,8 @@ const NoteCard = ({ note }: { note: Note }) => {
 	const lastEdit = `Last edit: ${updatedAt.toLocaleDateString()} - ${updatedAt.toLocaleTimeString()}`;
 	const { show, handleClose, handleShow } = useShowModal();
 
+	console.log(note.color.hex);
+
 	return (
 		<>
 			<NoteModal

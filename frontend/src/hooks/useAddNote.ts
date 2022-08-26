@@ -9,19 +9,11 @@ const useAddNote = () => {
 	const request = addNote(privateRequest);
 	const queryClient = useQueryClient();
 
-	const { mutate, isLoading } = useMutation(
-		async (note: AddNote) => await request(note),
-		{
-			onSuccess: (data) => {
-				queryClient.invalidateQueries(['notes', { isArchive: false }]);
-			},
-		}
-	);
-
-	return {
-		mutate,
-		isLoading,
-	};
+	return useMutation(async (note: AddNote) => await request(note), {
+		onSuccess: (data) => {
+			queryClient.invalidateQueries(['notes', { isArchive: false }]);
+		},
+	});
 };
 
 export default useAddNote;

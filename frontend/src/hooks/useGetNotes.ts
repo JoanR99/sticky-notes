@@ -17,6 +17,7 @@ const useGetNotes = () => {
 		data: notes,
 		isLoading,
 		error,
+		isSuccess,
 	} = useQuery(['notes', { isArchive }], async () => await request(isArchive), {
 		select: (notes) => {
 			return filterNotes(notes, colorFilter, searchFilter);
@@ -27,7 +28,7 @@ const useGetNotes = () => {
 		},
 	});
 
-	return { notes, isLoading, error };
+	return { notes, isLoading, error, isSuccess };
 };
 
 export default useGetNotes;

@@ -11,9 +11,9 @@ import SearchInputFilter from './SearchInputFilter';
 
 const LinkItem = styled(Link)`
 	text-decoration: none;
-	color: #000000;
+	color: #1976d2;
 	&:visited {
-		color: #000000;
+		color: #1976d2;
 	}
 `;
 
