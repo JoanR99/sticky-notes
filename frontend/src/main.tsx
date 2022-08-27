@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { QueryClientProvider, QueryClient } from 'react-query';
 
 import { AuthProvider } from './context/AuthProvider';
-import { RequestProvider } from './context/RequestProvider';
 import { FilterProvider } from './context/FilterProvider';
 import App from './App';
 
@@ -23,15 +22,13 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 	<React.StrictMode>
 		<QueryClientProvider client={queryClient}>
 			<AuthProvider>
-				<RequestProvider>
-					<FilterProvider>
-						<Router>
-							<Routes>
-								<Route path="/*" element={<App />} />
-							</Routes>
-						</Router>
-					</FilterProvider>
-				</RequestProvider>
+				<FilterProvider>
+					<Router>
+						<Routes>
+							<Route path="/*" element={<App />} />
+						</Routes>
+					</Router>
+				</FilterProvider>
 			</AuthProvider>
 		</QueryClientProvider>
 	</React.StrictMode>

@@ -3,9 +3,13 @@ import { Box, MenuItem, Select, InputLabel } from '@mui/material';
 import { useFilter } from '../context/FilterProvider';
 import useGetColors from '../hooks/useGetColors';
 import { Color } from '../types/Note';
+import usePrivateRequest from '../hooks/usePrivateRequest';
+import { useAuth } from '../context/AuthProvider';
 
 const FilterByColor = () => {
-	const { colors, isLoading, error } = useGetColors();
+	const { accessToken, changeAccessToken } = useAuth();
+	const privateRequest = usePrivateRequest(accessToken, changeAccessToken);
+	const { data: colors } = useGetColors(privateRequest);
 	const { changeColorFilter, colorFilter } = useFilter();
 
 	return (

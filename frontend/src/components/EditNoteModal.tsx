@@ -6,10 +6,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import { AxiosError } from 'axios';
 
 import useUpdateNote from '../hooks/useUpdateNote';
 import NoteForm from './NoteForm';
 import { Note, Color } from '../types/Note';
+import usePrivateRequest from '../hooks/usePrivateRequest';
+import { useAuth } from '../context/AuthProvider';
 
 interface Props {
 	show: boolean;
@@ -19,7 +22,9 @@ interface Props {
 
 const EditNoteModal = ({ handleClose, show, note }: Props) => {
 	const queryClient = useQueryClient();
-	const { mutate: updateNote, isLoading } = useUpdateNote();
+	const { accessToken, changeAccessToken } = useAuth();
+	const privateRequest = usePrivateRequest(accessToken, changeAccessToken);
+	const { mutate: updateNote, isLoading } = useUpdateNote(privateRequest);
 	const colors = queryClient.getQueryData('colors') as Color[];
 
 	const noteSchema = object({
@@ -51,6 +56,10 @@ const EditNoteModal = ({ handleClose, show, note }: Props) => {
 					toast.success('Note edited');
 					reset();
 					handleClose();
+				},
+				onError: (error) => {
+					if (error instanceof AxiosError)
+						toast.error(error?.response?.data?.message);
 				},
 			}
 		);

@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 
 import { privateRequest } from '../services/baseRequest';
-import { useAuth } from '../context/AuthProvider';
 import { getRefreshToken } from '../services/auth.services';
 
-const usePrivateRequest = () => {
-	const { accessToken, changeAccessToken } = useAuth();
-
+const usePrivateRequest = (
+	accessToken: string,
+	changeAccessToken: (token: string) => void
+) => {
 	useEffect(() => {
 		const requestIntercept = privateRequest.interceptors.request.use(
 			(config) => {

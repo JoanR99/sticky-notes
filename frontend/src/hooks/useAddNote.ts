@@ -1,11 +1,9 @@
 import { useMutation, useQueryClient } from 'react-query';
-
+import { AxiosInstance } from 'axios';
 import { addNote } from '../services/notes.services';
-import { useRequest } from '../context/RequestProvider';
 import { AddNote } from '../types/Note';
 
-const useAddNote = () => {
-	const privateRequest = useRequest();
+const useAddNote = (privateRequest: AxiosInstance) => {
 	const request = addNote(privateRequest);
 	const queryClient = useQueryClient();
 

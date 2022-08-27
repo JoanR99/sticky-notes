@@ -15,6 +15,7 @@ export const findByUserIdAndIsArchive = async (
 ) =>
 	await prisma.note.findMany({
 		where: { authorId: userId, isArchive },
+		orderBy: { updatedAt: 'desc' },
 		include: { color: true },
 	});
 

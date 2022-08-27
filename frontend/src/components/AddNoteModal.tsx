@@ -6,10 +6,13 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useQueryClient } from 'react-query';
+import { AxiosError } from 'axios';
 
 import useAddNote from '../hooks/useAddNote';
 import NoteForm from './NoteForm';
 import { Color } from '../types/Note';
+import usePrivateRequest from '../hooks/usePrivateRequest';
+import { useAuth } from '../context/AuthProvider';
 
 const AddNoteModal = ({
 	handleClose,
@@ -18,7 +21,9 @@ const AddNoteModal = ({
 	handleClose: () => void;
 	show: boolean;
 }) => {
-	const { mutate: addNote, isLoading } = useAddNote();
+	const { accessToken, changeAccessToken } = useAuth();
+	const privateRequest = usePrivateRequest(accessToken, changeAccessToken);
+	const { mutate: addNote, isLoading } = useAddNote(privateRequest);
 	const queryClient = useQueryClient();
 	const colors = queryClient.getQueryData('colors') as Color[];
 
@@ -49,6 +54,10 @@ const AddNoteModal = ({
 					toast.success('Note added successfuly');
 					reset();
 					handleClose();
+				},
+				onError: (error) => {
+					if (error instanceof AxiosError)
+						toast.error(error?.response?.data?.message);
 				},
 			}
 		);

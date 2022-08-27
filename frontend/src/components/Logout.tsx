@@ -8,7 +8,7 @@ import useLogout from '../hooks/useLogout';
 import { AxiosError } from 'axios';
 
 const Logout = () => {
-	const { logoutUser, isLoading } = useLogout();
+	const { mutate: logoutUser, isLoading } = useLogout();
 	const navigate = useNavigate();
 	const { changeAccessToken } = useAuth();
 	const queryClient = useQueryClient();

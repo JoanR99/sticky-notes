@@ -1,19 +1,12 @@
 import { useQuery } from 'react-query';
+import { AxiosInstance } from 'axios';
 
 import { getNote } from '../services/notes.services';
-import { useRequest } from '../context/RequestProvider';
 
-const useGetNote = (id: number) => {
-	const privateRequest = useRequest();
+const useGetNote = (privateRequest: AxiosInstance, id: number) => {
 	const request = getNote(privateRequest);
 
-	const {
-		data: note,
-		isLoading,
-		error,
-	} = useQuery(['note', { id: Number(id) }], async () => await request(id));
-
-	return { note, isLoading, error };
+	return useQuery(['note', { id: Number(id) }], async () => await request(id));
 };
 
 export default useGetNote;

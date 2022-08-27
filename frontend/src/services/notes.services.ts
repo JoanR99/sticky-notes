@@ -8,10 +8,12 @@ const getNotes =
 			.get(`/notes?isArchive=${isArchive}`)
 			.then((response) => response.data);
 
-const getNote = (privateRequest: AxiosInstance) => async (id: number) => {
-	const response = await privateRequest.get(`/notes/${id}`);
-	return response.data;
-};
+const getNote =
+	(privateRequest: AxiosInstance) =>
+	async (id: number): Promise<Note> => {
+		const response = await privateRequest.get(`/notes/${id}`);
+		return response.data;
+	};
 
 const addNote = (privateRequest: AxiosInstance) => async (note: AddNote) => {
 	const response = await privateRequest.post('/notes', note);
