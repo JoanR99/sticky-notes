@@ -5,6 +5,7 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import { Box } from '@mui/material';
 import Typography from '@mui/material/Typography';
+import { useTranslation } from 'react-i18next';
 
 import FilterByColor from './FilterByColor';
 import SearchInputFilter from './SearchInputFilter';
@@ -18,6 +19,7 @@ const LinkItem = styled(Link)`
 `;
 
 const SecondaryHeader = () => {
+	const { t } = useTranslation('translation');
 	const notesLocation = useLocation().pathname === '/' ? true : false;
 
 	return (
@@ -35,7 +37,9 @@ const SecondaryHeader = () => {
 						component="div"
 						sx={{ color: '#000000' }}
 					>
-						{notesLocation ? 'My Notes' : 'Archived Notes'}
+						{notesLocation
+							? t('second_header.notes')
+							: t('second_header.archived')}
 					</Typography>
 
 					<FilterByColor />
@@ -44,9 +48,9 @@ const SecondaryHeader = () => {
 
 					<Typography variant="h6" noWrap component="div">
 						{notesLocation ? (
-							<LinkItem to="/archived">Archived Notes</LinkItem>
+							<LinkItem to="/archived">{t('second_header.archived')}</LinkItem>
 						) : (
-							<LinkItem to="/">My Notes</LinkItem>
+							<LinkItem to="/">{t('second_header.notes')}</LinkItem>
 						)}
 					</Typography>
 				</Toolbar>

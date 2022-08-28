@@ -5,6 +5,7 @@ import { QueryClientProvider, QueryClient } from 'react-query';
 
 import { AuthProvider } from './context/AuthProvider';
 import { FilterProvider } from './context/FilterProvider';
+import './locales/i18n';
 import App from './App';
 
 const queryClient = new QueryClient({

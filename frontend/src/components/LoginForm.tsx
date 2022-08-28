@@ -11,6 +11,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useNavigate, useLocation, Location } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from 'react-i18next';
 
 import FormInput from '../components/FormInput';
 import { loginSchema, defaultValues } from '../utils/loginSchema';
@@ -19,6 +20,7 @@ import { useAuth } from '../context/AuthProvider';
 import { AxiosError } from 'axios';
 
 const LoginForm = () => {
+	const { t } = useTranslation('translation');
 	const { mutate: login, isLoading } = useLogin();
 
 	interface OwnLocation extends Location {
@@ -35,7 +37,7 @@ const LoginForm = () => {
 	const from = location.state?.from?.pathname || '/';
 
 	const methods = useForm({
-		resolver: zodResolver(loginSchema),
+		resolver: zodResolver(loginSchema()),
 		defaultValues,
 	});
 
@@ -58,7 +60,7 @@ const LoginForm = () => {
 					localStorage.setItem('persist', JSON.stringify(persist));
 					reset();
 					navigate(from, { replace: true });
-					toast.success('You successfully logged in');
+					toast.success(t('login.success'));
 				},
 				onError: (error) => {
 					if (error instanceof AxiosError)
@@ -84,7 +86,7 @@ const LoginForm = () => {
 					component="h1"
 					sx={{ textAlign: 'center', mb: '1.5rem' }}
 				>
-					Log into your account
+					{t('login.title')}
 				</Typography>
 				<Grid container justifyContent="center">
 					<Stack
@@ -94,14 +96,14 @@ const LoginForm = () => {
 						}}
 					>
 						<FormInput
-							label="Enter your email"
+							label={t('labels.email')}
 							type="email"
 							name="email"
 							required
 						/>
 						<FormInput
 							type="password"
-							label="Password"
+							label={t('labels.password')}
 							name="password"
 							required
 						/>
@@ -124,7 +126,7 @@ const LoginForm = () => {
 										color: '#5e5b5d',
 									}}
 								>
-									Trust this device
+									{t('labels.trust')}
 								</Typography>
 							}
 						/>
@@ -143,7 +145,7 @@ const LoginForm = () => {
 					type="submit"
 					loading={isLoading}
 				>
-					Login
+					{t('login.actions.login')}
 				</LoadingButton>
 			</Box>
 		</FormProvider>

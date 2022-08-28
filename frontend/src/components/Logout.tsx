@@ -2,12 +2,14 @@ import { useQueryClient } from 'react-query';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 import { useAuth } from '../context/AuthProvider';
 import useLogout from '../hooks/useLogout';
 import { AxiosError } from 'axios';
 
 const Logout = () => {
+	const { t } = useTranslation('translation');
 	const { mutate: logoutUser, isLoading } = useLogout();
 	const navigate = useNavigate();
 	const { changeAccessToken } = useAuth();
@@ -18,7 +20,7 @@ const Logout = () => {
 		logoutUser(undefined, {
 			onSuccess: (data) => {
 				changeAccessToken('');
-				toast.success('Logout successfully');
+				toast.success(t('logout.success'));
 				queryClient.clear();
 				navigate('/login');
 			},
@@ -33,11 +35,12 @@ const Logout = () => {
 
 	return (
 		<LoadingButton
-			sx={{ color: '#ffff' }}
+			variant="outlined"
+			sx={{ color: '#ffffff', border: 'solid 1px #ffffff' }}
 			onClick={handleClick}
 			loading={isLoading}
 		>
-			Logout
+			{t('logout.action')}
 		</LoadingButton>
 	);
 };

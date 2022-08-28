@@ -4,6 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 import FormInput from '../components/FormInput';
 import useRegister from '../hooks/useRegister';
@@ -12,8 +13,10 @@ import { RegisterCredentials } from '../types/Auth';
 import { AxiosError } from 'axios';
 
 const RegisterForm = () => {
+	const { t } = useTranslation('translation');
+
 	const methods = useForm({
-		resolver: zodResolver(registerSchema),
+		resolver: zodResolver(registerSchema()),
 		defaultValues,
 	});
 
@@ -29,7 +32,7 @@ const RegisterForm = () => {
 			{ username, email, password },
 			{
 				onSuccess: () => {
-					toast.success('Register successfully');
+					toast.success(t('signUp.success'));
 					methods.reset();
 					navigate('/login');
 				},
@@ -57,26 +60,31 @@ const RegisterForm = () => {
 					component="h1"
 					sx={{ textAlign: 'center', mb: '1.5rem' }}
 				>
-					Welcome to Sticky Notes
+					{t('signUp.title')}
 				</Typography>
 				<Grid container justifyContent="center">
 					<Stack sx={{ textAlign: 'center', width: '100%' }}>
-						<FormInput label="Username" type="text" name="username" required />
 						<FormInput
-							label="Enter your email"
+							label={t('labels.username')}
+							type="text"
+							name="username"
+							required
+						/>
+						<FormInput
+							label={t('labels.email')}
 							type="email"
 							name="email"
 							required
 						/>
 						<FormInput
 							type="password"
-							label="Password"
+							label={t('labels.password')}
 							name="password"
 							required
 						/>
 						<FormInput
 							type="password"
-							label="Confirm password"
+							label={t('labels.confirm_password')}
 							name="passwordConfirm"
 							required
 						/>
@@ -95,7 +103,7 @@ const RegisterForm = () => {
 					type="submit"
 					loading={isLoading}
 				>
-					Sign Up
+					{t('signUp.actions.register')}
 				</LoadingButton>
 			</Box>
 		</FormProvider>

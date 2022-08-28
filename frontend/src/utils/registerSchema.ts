@@ -1,30 +1,38 @@
 import { object, string } from 'zod';
+import { useTranslation } from 'react-i18next';
 
-const registerSchema = object({
-	username: string({ required_error: 'Username is required' }).max(20),
-	email: string({ required_error: 'Email is required' }).email(
-		'Email Address is invalid'
-	),
-	password: string({ required_error: 'Password is required' })
-		.regex(
-			/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%])/,
-			'Password must contain at least a lowercase letter, a uppercase letter, a number and a special character ( ! @ # $ % )'
-		)
-		.min(8, 'Password must be 8 or more characters')
-		.max(24, 'Password must be less than 24 characters'),
-	passwordConfirm: string({
-		required_error: 'Password confirm is required',
-	}),
-}).refine((data) => data.password === data.passwordConfirm, {
-	path: ['passwordConfirm'],
-	message: 'Password do not match',
-});
+export const registerSchema = () => {
+	const { t } = useTranslation('translation');
+	return object({
+		username: string({
+			required_error: t('validation.username.required'),
+		})
+			.min(1, t('validation.username.required'))
+			.max(20, t('validation.username.max')),
+		email: string({
+			required_error: t('validation.email.required'),
+		}).email(t('validation.email.invalid')),
+		password: string({
+			required_error: t('validation.password.required'),
+		})
+			.regex(
+				/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%])/,
+				t('validation.password.invalid')
+			)
+			.min(8, t('validation.password.min'))
+			.max(24, t('validation.password.max')),
+		passwordConfirm: string({
+			required_error: t('validation.password_confirm.required'),
+		}).min(1, t('validation.password_confirm.required')),
+	}).refine((data) => data.password === data.passwordConfirm, {
+		path: ['passwordConfirm'],
+		message: t('validation.password.match'),
+	});
+};
 
-const defaultValues = {
+export const defaultValues = {
 	username: '',
 	email: '',
 	password: '',
 	passwordConfirm: '',
 };
-
-export { registerSchema, defaultValues };

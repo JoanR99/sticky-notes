@@ -1,6 +1,7 @@
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
+import { useTranslation } from 'react-i18next';
 
 import { useFilter } from '../context/FilterProvider';
 
@@ -48,6 +49,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const SearchInputFilter = () => {
+	const { t } = useTranslation('translation');
 	const { searchFilter, changeSearchFilter } = useFilter();
 	return (
 		<Search>
@@ -55,8 +57,8 @@ const SearchInputFilter = () => {
 				<SearchIcon />
 			</SearchIconWrapper>
 			<StyledInputBase
-				placeholder="Search…"
-				inputProps={{ 'aria-label': 'search' }}
+				placeholder={t('search.placeholder')}
+				inputProps={{ 'aria-label': t('search.placeholder') }}
 				value={searchFilter}
 				onChange={(e) => changeSearchFilter(e.target.value)}
 			/>

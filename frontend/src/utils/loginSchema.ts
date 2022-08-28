@@ -1,20 +1,24 @@
 import { object, string, boolean } from 'zod';
+import { useTranslation } from 'react-i18next';
 
-const loginSchema = object({
-	email: string()
-		.min(1, 'Email address is required')
-		.email('Email Address is invalid'),
-	password: string()
-		.min(1, 'Password is required')
-		.min(8, 'Password must be more than 8 characters')
-		.max(32, 'Password must be less than 32 characters'),
-	persist: boolean(),
-});
+export const loginSchema = () => {
+	const { t } = useTranslation('translation');
 
-const defaultValues = {
+	return object({
+		email: string({
+			required_error: t('validation.email.required'),
+		})
+			.min(1, t('validation.email.required'))
+			.email(t('validation.email.invalid')),
+		password: string({
+			required_error: t('validation.password.required'),
+		}).min(1, t('validation.password.required')),
+		persist: boolean(),
+	});
+};
+
+export const defaultValues = {
 	email: '',
 	password: '',
 	persist: false,
 };
-
-export { loginSchema, defaultValues };
