@@ -1,4 +1,4 @@
-import { Box, MenuItem, Select, InputLabel } from '@mui/material';
+import { Box, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { useFilter } from '../context/FilterProvider';
@@ -15,12 +15,12 @@ const FilterByColor = () => {
 	const { changeColorFilter, colorFilter } = useFilter();
 
 	return (
-		<Box sx={{ display: 'flex', alignItems: 'center' }}>
+		<FormControl sx={{ m: 1, minWidth: 80 }}>
 			<InputLabel id="colors" sx={{ mr: 2 }}>
-				{t('filter_color.action')}
+				Color
 			</InputLabel>
 			<Select
-				label="Filter by color"
+				label={t('labels.select_color')}
 				labelId="colors"
 				onChange={(e) => changeColorFilter(e.target.value)}
 				value={colorFilter}
@@ -44,7 +44,7 @@ const FilterByColor = () => {
 					</MenuItem>
 				))}
 			</Select>
-		</Box>
+		</FormControl>
 	);
 };
 

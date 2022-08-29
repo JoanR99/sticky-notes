@@ -39,7 +39,8 @@
 		"trust": "Trust this device",
 		"title": "Title",
 		"content": "Content",
-		"color": "Color"
+		"color": "Color",
+		"select_color": "Filter by color"
 	},
 	"validation": {
 		"username": {
@@ -101,7 +102,8 @@
 		"archive": "Archive",
 		"unarchive": "Unarchive",
 		"edit": "Edit",
-		"closse": "Close"
+		"close": "Close",
+		"change_language": "Change Language"
 	},
 	"edit_note": {
 		"title": "Edit Note",
