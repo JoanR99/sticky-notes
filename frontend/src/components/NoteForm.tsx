@@ -1,6 +1,7 @@
 import { Box, Grid, Stack, Button, MenuItem } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import FormInput from './FormInput';
 import SelectInput from './SelectInput';
@@ -30,6 +31,8 @@ const NoteForm = ({
 	isLoading,
 	buttonDesc,
 }: Props) => {
+	const { t } = useTranslation('translation');
+
 	return (
 		<FormProvider {...methods}>
 			<Box
@@ -43,17 +46,27 @@ const NoteForm = ({
 			>
 				<Grid container justifyContent="center">
 					<Stack sx={{ textAlign: 'center', width: '80%', mb: 2 }}>
-						<FormInput label="Title" type="text" name="title" required />
+						<FormInput
+							label={t('labels.title')}
+							type="text"
+							name="title"
+							required
+						/>
 						<FormInput
 							type="text"
 							multiline
 							rows={4}
-							label="Content"
+							label={t('labels.content')}
 							name="content"
 							required
 						/>
 
-						<SelectInput id="color" name="color" label="color" required>
+						<SelectInput
+							id="color"
+							name="color"
+							label={t('labels.color')}
+							required
+						>
 							{colors?.map((color) => {
 								return (
 									<MenuItem key={color.id} value={color.id}>
@@ -66,7 +79,7 @@ const NoteForm = ({
 												mr: 2,
 											}}
 										></Box>
-										{color.name}
+										{t(`colors.${color.name}`)}
 									</MenuItem>
 								);
 							})}
@@ -76,7 +89,7 @@ const NoteForm = ({
 
 				<Stack direction="row" spacing={2} sx={{ ml: 'auto' }}>
 					<Button variant="contained" color="error" onClick={handleClose}>
-						Cancel
+						{t('actions.cancel')}
 					</Button>
 
 					<LoadingButton
@@ -84,9 +97,9 @@ const NoteForm = ({
 						variant="contained"
 						type="submit"
 						loading={isLoading}
-						sx={{ width: '30px' }}
+						sx={{ width: '100px' }}
 					>
-						{buttonDesc}
+						{t(`actions.${buttonDesc}`)}
 					</LoadingButton>
 				</Stack>
 			</Box>

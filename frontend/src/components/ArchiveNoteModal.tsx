@@ -5,6 +5,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
+import { useTranslation } from 'react-i18next';
 
 import useUpdateNote from '../hooks/useUpdateNote';
 import { Note } from '../types/Note';
@@ -18,6 +19,7 @@ interface Props {
 }
 
 const ArchiveNoteModal = ({ show, handleClose, note }: Props) => {
+	const { t } = useTranslation('translation');
 	const { accessToken, changeAccessToken } = useAuth();
 	const privateRequest = usePrivateRequest(accessToken, changeAccessToken);
 	const { mutate: updateNote, isLoading } = useUpdateNote(privateRequest);
@@ -26,7 +28,10 @@ const ArchiveNoteModal = ({ show, handleClose, note }: Props) => {
 			{ id: note?.id, newNote: { isArchive: !note?.isArchive } },
 			{
 				onSuccess: () => {
-					toast.success('Note archived successfully');
+					const successMessage = note?.isArchive
+						? t('unarchive_note.success')
+						: t('archive_note.success');
+					toast.success(successMessage);
 					handleClose();
 				},
 				onError: (error) => {
@@ -37,22 +42,26 @@ const ArchiveNoteModal = ({ show, handleClose, note }: Props) => {
 		);
 	};
 
+	const dialogTitle = note?.isArchive
+		? t('unarchive_note.title')
+		: t('archive_note.title');
+
+	const dialogAction = note?.isArchive
+		? t('actions.unarchive')
+		: t('actions.archive');
+
 	return (
 		<Dialog
 			open={show}
 			onClose={handleClose}
 			aria-labelledby="alert-dialog-title"
 		>
-			<DialogTitle id="alert-dialog-title">
-				{`Are you sure you want to ${
-					note?.isArchive ? 'unarchive' : 'archive'
-				} this note?`}
-			</DialogTitle>
+			<DialogTitle id="alert-dialog-title">{dialogTitle}</DialogTitle>
 
 			<DialogActions>
-				<Button onClick={handleClose}>Cancel</Button>
+				<Button onClick={handleClose}>{t('actions.cancel')}</Button>
 				<LoadingButton onClick={handleClick} loading={isLoading} autoFocus>
-					{note?.isArchive ? 'unarchive' : 'archive'}
+					{dialogAction}
 				</LoadingButton>
 			</DialogActions>
 		</Dialog>

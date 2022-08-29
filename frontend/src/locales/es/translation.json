@@ -31,7 +31,10 @@
 		"email": "Correo electrónico",
 		"password": "Contraseña",
 		"confirm_password": "Confirma contraseña",
-		"trust": "Confío en este dispositivo"
+		"trust": "Confío en este dispositivo",
+		"title": "Titulo",
+		"content": "Contenido",
+		"color": "Color"
 	},
 	"validation": {
 		"username": {
@@ -65,21 +68,53 @@
 		"archived": "Notas Archivadas"
 	},
 	"filter_color": {
-		"action": "Filtrar por color",
-		"colors": {
-			"all": "Todo",
-			"white": "Blanco",
-			"gray": "Gris",
-			"brown": "Marron",
-			"pink": "Rosado",
-			"purple": "Purpura",
-			"dark blue": "Azul Oscuro",
-			"blue": "Azul",
-			"teal": "Teal",
-			"green": "Verde",
-			"yellow": "Amarillo",
-			"orange": "Naranja",
-			"red": "Rojo"
-		}
+		"action": "Filtrar por color"
+	},
+	"colors": {
+		"all": "Todo",
+		"white": "Blanco",
+		"gray": "Gris",
+		"brown": "Marron",
+		"pink": "Rosado",
+		"purple": "Purpura",
+		"dark blue": "Azul Oscuro",
+		"blue": "Azul",
+		"teal": "Teal",
+		"green": "Verde",
+		"yellow": "Amarillo",
+		"orange": "Naranja",
+		"red": "Rojo"
+	},
+	"add_note": {
+		"title": "Agregar Nota",
+		"success": "Nota agregada"
+	},
+	"actions": {
+		"cancel": "Cancelar",
+		"add": "Agregar",
+		"delete": "Eliminar",
+		"archive": "Archivar",
+		"unarchive": "Desarchivar",
+		"edit": "Editar",
+		"close": "Cerrar"
+	},
+	"edit_note": {
+		"title": "Editar Nota",
+		"success": "Nota editada"
+	},
+	"archive_note": {
+		"title": "¿Estas seguro de que quieres archivar esta nota?",
+		"success": "Nota archivada"
+	},
+	"unarchive_note": {
+		"title": "¿Estas seguro de que quieres desarchivar esta nota?",
+		"success": "Nota desarchivada"
+	},
+	"delete_note": {
+		"title": "¿Estas seguro de que quieres eliminar esta nota?",
+		"success": "Nota eliminada"
+	},
+	"note": {
+		"last_edit": "Ultima edición"
 	}
 }

@@ -2,6 +2,7 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
+import { useTranslation } from 'react-i18next';
 
 import NoteModal from './NoteModal';
 import useShowModal from '../hooks/useShowModal';
@@ -11,8 +12,11 @@ import EditNote from './EditNote';
 import { Note } from '../types/Note';
 
 const NoteCard = ({ note }: { note: Note }) => {
+	const { t } = useTranslation('translation');
 	const updatedAt = new Date(note.updatedAt);
-	const lastEdit = `Last edit: ${updatedAt.toLocaleDateString()} - ${updatedAt.toLocaleTimeString()}`;
+	const lastEdit = `${t(
+		'note.last_edit'
+	)}: ${updatedAt.toLocaleDateString()} - ${updatedAt.toLocaleTimeString()}`;
 	const { show, handleClose, handleShow } = useShowModal();
 
 	console.log(note.color.hex);

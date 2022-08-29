@@ -26,7 +26,7 @@ const FilterByColor = () => {
 				value={colorFilter}
 			>
 				<MenuItem key={0} value="all">
-					{t(`filter_color.colors.all`)}
+					{t(`colors.all`)}
 				</MenuItem>
 				{colors?.map((color: Color) => (
 					<MenuItem key={color.id} value={color.name}>
@@ -40,7 +40,7 @@ const FilterByColor = () => {
 								border: '1px solid black',
 							}}
 						></Box>
-						{t(`filter_color.colors.${color.name}`)}
+						{t(`colors.${color.name}`)}
 					</MenuItem>
 				))}
 			</Select>

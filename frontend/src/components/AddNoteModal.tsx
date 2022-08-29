@@ -7,6 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useQueryClient } from 'react-query';
 import { AxiosError } from 'axios';
+import { useTranslation } from 'react-i18next';
 
 import useAddNote from '../hooks/useAddNote';
 import NoteForm from './NoteForm';
@@ -21,6 +22,7 @@ const AddNoteModal = ({
 	handleClose: () => void;
 	show: boolean;
 }) => {
+	const { t } = useTranslation('translation');
 	const { accessToken, changeAccessToken } = useAuth();
 	const privateRequest = usePrivateRequest(accessToken, changeAccessToken);
 	const { mutate: addNote, isLoading } = useAddNote(privateRequest);
@@ -51,7 +53,7 @@ const AddNoteModal = ({
 			{ title, content, colorId: color },
 			{
 				onSuccess: (data) => {
-					toast.success('Note added successfuly');
+					toast.success(t('add_note.success'));
 					reset();
 					handleClose();
 				},
@@ -65,7 +67,7 @@ const AddNoteModal = ({
 
 	return (
 		<Dialog fullWidth={true} maxWidth="sm" open={show} onClose={handleClose}>
-			<DialogTitle>Add Note</DialogTitle>
+			<DialogTitle>{t('add_note.title')}</DialogTitle>
 			<DialogContent>
 				<NoteForm
 					handleClose={handleClose}
@@ -73,7 +75,7 @@ const AddNoteModal = ({
 					onHandleSubmit={onHandleSubmit}
 					colors={colors}
 					isLoading={isLoading}
-					buttonDesc="Add"
+					buttonDesc="add"
 				/>
 			</DialogContent>
 		</Dialog>

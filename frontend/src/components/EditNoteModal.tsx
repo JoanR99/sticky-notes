@@ -7,6 +7,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { AxiosError } from 'axios';
+import { useTranslation } from 'react-i18next';
 
 import useUpdateNote from '../hooks/useUpdateNote';
 import NoteForm from './NoteForm';
@@ -21,6 +22,7 @@ interface Props {
 }
 
 const EditNoteModal = ({ handleClose, show, note }: Props) => {
+	const { t } = useTranslation('translation');
 	const queryClient = useQueryClient();
 	const { accessToken, changeAccessToken } = useAuth();
 	const privateRequest = usePrivateRequest(accessToken, changeAccessToken);
@@ -53,7 +55,7 @@ const EditNoteModal = ({ handleClose, show, note }: Props) => {
 			{
 				onSuccess: () => {
 					queryClient.invalidateQueries(['note', { id: note.id }]);
-					toast.success('Note edited');
+					toast.success(t('edit_note.success'));
 					reset();
 					handleClose();
 				},
@@ -67,7 +69,7 @@ const EditNoteModal = ({ handleClose, show, note }: Props) => {
 
 	return (
 		<Dialog fullWidth={true} maxWidth="sm" open={show} onClose={handleClose}>
-			<DialogTitle>Edit Note</DialogTitle>
+			<DialogTitle>{t('edit_note.title')}</DialogTitle>
 			<DialogContent>
 				<NoteForm
 					handleClose={handleClose}
@@ -75,7 +77,7 @@ const EditNoteModal = ({ handleClose, show, note }: Props) => {
 					onHandleSubmit={onHandleSubmit}
 					colors={colors}
 					isLoading={isLoading}
-					buttonDesc="Edit"
+					buttonDesc="edit"
 				/>
 			</DialogContent>
 		</Dialog>

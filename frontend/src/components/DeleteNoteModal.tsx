@@ -5,6 +5,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
+import { useTranslation } from 'react-i18next';
 
 import useDeleteNote from '../hooks/useDeleteNote';
 import usePrivateRequest from '../hooks/usePrivateRequest';
@@ -17,13 +18,14 @@ interface Props {
 }
 
 const DeleteNoteModal = ({ show, handleClose, id }: Props) => {
+	const { t } = useTranslation('translation');
 	const { accessToken, changeAccessToken } = useAuth();
 	const privateRequest = usePrivateRequest(accessToken, changeAccessToken);
 	const { mutate: deleteNote, isLoading } = useDeleteNote(privateRequest);
 	const handleClick = async () => {
 		await deleteNote(id, {
 			onSuccess: () => {
-				toast.success('Note deleted successfully');
+				toast.success(t('delete_note.success'));
 				handleClose();
 			},
 			onError: (error) => {
@@ -40,13 +42,13 @@ const DeleteNoteModal = ({ show, handleClose, id }: Props) => {
 			aria-labelledby="alert-dialog-title"
 		>
 			<DialogTitle id="alert-dialog-title">
-				Are you sure you want to delete this note?
+				{t('delete_note.title')}
 			</DialogTitle>
 
 			<DialogActions>
-				<Button onClick={handleClose}>Cancel</Button>
+				<Button onClick={handleClose}>{t('actions.cancel')}</Button>
 				<LoadingButton onClick={handleClick} loading={isLoading} autoFocus>
-					Delete
+					{t('actions.delete')}
 				</LoadingButton>
 			</DialogActions>
 		</Dialog>
