@@ -4,10 +4,13 @@ import jwt from 'jsonwebtoken';
 
 import app from '../app';
 import { prisma } from '../../prisma';
+import en from '../locales/en/translation.json';
+import es from '../locales/es/translation.json';
 
 type RequestOptions = {
 	auth?: string;
 	isArchive?: boolean;
+	language?: string;
 };
 
 const login = (credentials = {}) =>
@@ -50,6 +53,10 @@ const getNotes = (options: RequestOptions = {}) => {
 
 	if ('auth' in options) {
 		agent.set('Authorization', `Bearer ${options.auth}`);
+	}
+
+	if ('language' in options) {
+		agent.set('Accept-Language', options.language as string);
 	}
 
 	return agent.send();
@@ -133,7 +140,7 @@ describe('Get Notes', () => {
 				isArchive: false,
 			});
 
-			expect(response.body.errorMessage).toBe('User not found');
+			expect(response.body.errorMessage).toBe(en.user.not_found);
 		});
 
 		it('should return status 400 on get note request without isArchive query', async () => {
@@ -161,7 +168,7 @@ describe('Get Notes', () => {
 				auth: accessToken,
 			});
 
-			expect(response.body.errorMessage).toEqual(['isArchive is not defined']);
+			expect(response.body.errorMessage).toEqual([en.isArchive]);
 		});
 	});
 
@@ -253,6 +260,47 @@ describe('Get Notes', () => {
 			});
 
 			expect(response.body[0].isArchive).toBe(true);
+		});
+	});
+
+	describe('Internationalization', () => {
+		it('should return message User not found on get note request with invalid user', async () => {
+			const secret = process.env.ACCESS_TOKEN_SECRET as string;
+
+			const payload = {
+				user: {
+					id: 5,
+				},
+			};
+
+			const signOptions = {
+				expiresIn: '1m',
+			};
+
+			const accessToken = jwt.sign(payload, secret, signOptions);
+
+			const response = await getNotes({
+				auth: accessToken,
+				isArchive: false,
+				language: 'es',
+			});
+
+			expect(response.body.errorMessage).toBe(es.user.not_found);
+		});
+
+		it('should return isArchive is undefined on get note request without isArchive query', async () => {
+			await createUser();
+
+			const loginResponse = await login(VALID_CREDENTIALS);
+
+			const accessToken = loginResponse.body.accessToken;
+
+			const response = await getNotes({
+				auth: accessToken,
+				language: 'es',
+			});
+
+			expect(response.body.errorMessage).toEqual([es.isArchive]);
 		});
 	});
 });

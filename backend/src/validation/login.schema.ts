@@ -3,9 +3,9 @@ import { z } from 'zod';
 const loginSchema = z
 	.object({
 		email: z
-			.string({ required_error: 'Email is required' })
-			.email('Not a valid email'),
-		password: z.string({ required_error: 'Password is required' }),
+			.string({ required_error: 'validation.email.required' })
+			.email('validation.email.invalid'),
+		password: z.string({ required_error: 'validation.password.required' }),
 	})
 	.required();
 

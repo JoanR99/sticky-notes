@@ -1,0 +1,54 @@
+{
+	"unauthorized": "Wrong credentials",
+	"color": {
+		"not_found": "Color not found",
+		"delete": "Color deleted successfully"
+	},
+	"user": {
+		"not_found": "User not found",
+		"create": "User created successfully"
+	},
+	"note": {
+		"not_found": "Note not found",
+		"delete": "Note deleted successfully",
+		"update": "Note updated successfully"
+	},
+	"isArchive": "isArchive is not defined",
+	"validation": {
+		"name": {
+			"required": "Name is required",
+			"type": "Name must be a string"
+		},
+		"hex": {
+			"required": "Hex is required",
+			"type": "Hex must be a string"
+		},
+		"title": {
+			"required": "Title is required",
+			"type": "Title must be a string"
+		},
+		"content": {
+			"required": "Content is required",
+			"type": "Content must be a string"
+		},
+		"color_id": {
+			"required": "Color is required",
+			"type": "Color must be a number"
+		},
+		"email": {
+			"required": "Email is required",
+			"invalid": "Invalid email"
+		},
+		"password": {
+			"required": "Password is required",
+			"invalid": "Password must contain at least a lowercase letter, a uppercase letter, a number and a special character ( ! @ # $ % )",
+			"min": "Password must be 8 or more characters",
+			"max": "Password must be 24 or fewer characters"
+		},
+		"username": {
+			"required": "Username is required",
+			"min": "Username must be 2 or more characters",
+			"max": "Username must be 20 or fewer characters"
+		}
+	}
+}

@@ -3,9 +3,12 @@ import bcrypt from 'bcrypt';
 
 import app from '../app';
 import { prisma } from '../../prisma';
+import en from '../locales/en/translation.json';
+import es from '../locales/es/translation.json';
 
 type RequestOptions = {
 	auth?: string;
+	language?: string;
 };
 
 const login = (credentials = {}) =>
@@ -16,6 +19,10 @@ const createNote = (body = {}, options: RequestOptions = {}) => {
 
 	if ('auth' in options) {
 		agent.set('Authorization', `Bearer ${options.auth}`);
+	}
+
+	if ('language' in options) {
+		agent.set('Accept-Language', options.language as string);
 	}
 
 	return agent.send(body);
@@ -128,32 +135,32 @@ describe('Create Note', () => {
 			const response = await createNote({}, { auth: accessToken });
 
 			expect(response.body.errorMessage).toEqual([
-				'Title is required',
-				'Content is required',
-				'Color is required',
+				en.validation.title.required,
+				en.validation.content.required,
+				en.validation.color_id.required,
 			]);
 		});
 
 		it.each`
 			field        | value            | message
-			${'title'}   | ${undefined}     | ${'Title is required'}
-			${'content'} | ${undefined}     | ${'Content is required'}
-			${'colorId'} | ${undefined}     | ${'Color is required'}
-			${'title'}   | ${1}             | ${'Title must be a string'}
-			${'content'} | ${1}             | ${'Content must be a string'}
-			${'colorId'} | ${'hello'}       | ${'Color must be a number'}
-			${'title'}   | ${null}          | ${'Title must be a string'}
-			${'content'} | ${null}          | ${'Content must be a string'}
-			${'colorId'} | ${null}          | ${'Color must be a number'}
-			${'title'}   | ${false}         | ${'Title must be a string'}
-			${'content'} | ${false}         | ${'Content must be a string'}
-			${'colorId'} | ${false}         | ${'Color must be a number'}
-			${'title'}   | ${{ hi: 'bye' }} | ${'Title must be a string'}
-			${'content'} | ${{ hi: 'bye' }} | ${'Content must be a string'}
-			${'colorId'} | ${{ hi: 'bye' }} | ${'Color must be a number'}
-			${'title'}   | ${['hi']}        | ${'Title must be a string'}
-			${'content'} | ${['hi']}        | ${'Content must be a string'}
-			${'colorId'} | ${['hi']}        | ${'Color must be a number'}
+			${'title'}   | ${undefined}     | ${en.validation.title.required}
+			${'content'} | ${undefined}     | ${en.validation.content.required}
+			${'colorId'} | ${undefined}     | ${en.validation.color_id.required}
+			${'title'}   | ${1}             | ${en.validation.title.type}
+			${'content'} | ${1}             | ${en.validation.content.type}
+			${'colorId'} | ${'hello'}       | ${en.validation.color_id.type}
+			${'title'}   | ${null}          | ${en.validation.title.type}
+			${'content'} | ${null}          | ${en.validation.content.type}
+			${'colorId'} | ${null}          | ${en.validation.color_id.type}
+			${'title'}   | ${false}         | ${en.validation.title.type}
+			${'content'} | ${false}         | ${en.validation.content.type}
+			${'colorId'} | ${false}         | ${en.validation.color_id.type}
+			${'title'}   | ${{ hi: 'bye' }} | ${en.validation.title.type}
+			${'content'} | ${{ hi: 'bye' }} | ${en.validation.content.type}
+			${'colorId'} | ${{ hi: 'bye' }} | ${en.validation.color_id.type}
+			${'title'}   | ${['hi']}        | ${en.validation.title.type}
+			${'content'} | ${['hi']}        | ${en.validation.content.type}
+			${'colorId'} | ${['hi']}        | ${en.validation.color_id.type}
 		`(
 			'should return $message on create note request when $field is $value',
 			async ({ field, value, message }) => {
@@ -200,7 +207,7 @@ describe('Create Note', () => {
 				auth: accessToken,
 			});
 
-			expect(response.body.errorMessage).toBe('User not found');
+			expect(response.body.errorMessage).toBe(en.user.not_found);
 		});
 
 		it('should return status 404 on create note request with unknown color', async () => {
@@ -228,7 +235,7 @@ describe('Create Note', () => {
 				auth: accessToken,
 			});
 
-			expect(response.body.errorMessage).toBe('Color not found');
+			expect(response.body.errorMessage).toBe(en.color.not_found);
 		});
 	});
 
@@ -348,6 +355,99 @@ describe('Create Note', () => {
 			});
 
 			expect(color.id).toBe(noteInDb?.colorId);
+		});
+	});
+
+	describe('Internationalization', () => {
+		it('should return error messages on create note request without body', async () => {
+			await createUser();
+
+			const loginResponse = await login(VALID_CREDENTIALS);
+
+			const accessToken = loginResponse.body.accessToken;
+
+			const response = await createNote(
+				{},
+				{ auth: accessToken, language: 'es' }
+			);
+
+			expect(response.body.errorMessage).toEqual([
+				es.validation.title.required,
+				es.validation.content.required,
+				es.validation.color_id.required,
+			]);
+		});
+
+		it.each`
+			field        | value            | message
+			${'title'}   | ${undefined}     | ${es.validation.title.required}
+			${'content'} | ${undefined}     | ${es.validation.content.required}
+			${'colorId'} | ${undefined}     | ${es.validation.color_id.required}
+			${'title'}   | ${1}             | ${es.validation.title.type}
+			${'content'} | ${1}             | ${es.validation.content.type}
+			${'colorId'} | ${'hello'}       | ${es.validation.color_id.type}
+			${'title'}   | ${null}          | ${es.validation.title.type}
+			${'content'} | ${null}          | ${es.validation.content.type}
+			${'colorId'} | ${null}          | ${es.validation.color_id.type}
+			${'title'}   | ${false}         | ${es.validation.title.type}
+			${'content'} | ${false}         | ${es.validation.content.type}
+			${'colorId'} | ${false}         | ${es.validation.color_id.type}
+			${'title'}   | ${{ hi: 'bye' }} | ${es.validation.title.type}
+			${'content'} | ${{ hi: 'bye' }} | ${es.validation.content.type}
+			${'colorId'} | ${{ hi: 'bye' }} | ${es.validation.color_id.type}
+			${'title'}   | ${['hi']}        | ${es.validation.title.type}
+			${'content'} | ${['hi']}        | ${es.validation.content.type}
+			${'colorId'} | ${['hi']}        | ${es.validation.color_id.type}
+		`(
+			'should return $message on create note request when $field is $value',
+			async ({ field, value, message }) => {
+				await createUser();
+
+				const loginResponse = await login(VALID_CREDENTIALS);
+
+				const accessToken = loginResponse.body.accessToken;
+
+				const body = { ...CREATE_NOTE_BODY, [field]: value };
+
+				const response = await createNote(body, {
+					auth: accessToken,
+					language: 'es',
+				});
+
+				expect(response.body.errorMessage).toEqual([message]);
+			}
+		);
+
+		it('should return error message on create note request from unknown user', async () => {
+			await createUser();
+
+			const loginResponse = await login(VALID_CREDENTIALS);
+
+			const accessToken = loginResponse.body.accessToken;
+
+			await prisma.user.delete({ where: { email: VALID_CREDENTIALS.email } });
+
+			const response = await createNote(CREATE_NOTE_BODY, {
+				auth: accessToken,
+				language: 'es',
+			});
+
+			expect(response.body.errorMessage).toBe(es.user.not_found);
+		});
+
+		it('should return status 404 on create note request with unknown color', async () => {
+			await createUser();
+
+			const loginResponse = await login(VALID_CREDENTIALS);
+
+			const accessToken = loginResponse.body.accessToken;
+
+			const response = await createNote(CREATE_NOTE_BODY, {
+				auth: accessToken,
+				language: 'es',
+			});
+
+			expect(response.body.errorMessage).toBe(es.color.not_found);
 		});
 	});
 });

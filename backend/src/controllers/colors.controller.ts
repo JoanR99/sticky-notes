@@ -21,9 +21,9 @@ export const deleteColor: RequestHandler = async (req, res) => {
 
 	const color = await colorService.findById(Number(id));
 
-	if (!color) throw new NotFound('Color not found');
+	if (!color) throw new NotFound(req.t('color.not_found'));
 
 	await colorService.deleteColor(Number(id));
 
-	res.json({ message: 'Color deleted successfully' });
+	res.json({ message: req.t('color.delete') });
 };

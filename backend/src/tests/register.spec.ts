@@ -2,9 +2,22 @@ import request from 'supertest';
 
 import app from '../app';
 import { prisma } from '../../prisma';
+import en from '../locales/en/translation.json';
+import es from '../locales/es/translation.json';
 
-const register = (credentials = {}) =>
-	request(app).post('/api/users/register').send(credentials);
+type RequestOptions = {
+	language?: string;
+};
+
+const register = (credentials = {}, options: RequestOptions = {}) => {
+	const agent = request(app).post('/api/users/register');
+
+	if ('language' in options) {
+		agent.set('Accept-Language', options.language as string);
+	}
+
+	return agent.send(credentials);
+};
 
 const VALID_CREDENTIALS = {
 	username: 'user',
@@ -36,23 +49,21 @@ describe('Register', () => {
 			}
 		);
 
-		const WITHOUT_CREDENTIALS_MESSAGES = [
-			'Username is required',
-			'Email is required',
-			'Password is required',
-		];
-
 		it('should return error messages on register request without credentials', async () => {
 			const response = await register();
 
-			expect(response.body.errorMessage).toEqual(WITHOUT_CREDENTIALS_MESSAGES);
+			expect(response.body.errorMessage).toEqual([
+				en.validation.username.required,
+				en.validation.email.required,
+				en.validation.password.required,
+			]);
 		});
 
 		it.each`
-			field         | message                     | failCase
-			${'password'} | ${['Password is required']} | ${'without password field'}
-			${'email'}    | ${['Email is required']}    | ${'without email field'}
-			${'username'} | ${['Username is required']} | ${'without username field'}
+			field         | message                              | failCase
+			${'password'} | ${[en.validation.password.required]} | ${'without password field'}
+			${'email'}    | ${[en.validation.email.required]}    | ${'without email field'}
+			${'username'} | ${[en.validation.username.required]} | ${'without username field'}
 		`(
 			'should return error message on register request $failCase',
 			async ({ field, message }) => {
@@ -79,7 +90,7 @@ describe('Register', () => {
 				email: 'user@',
 			});
 
-			expect(response.body.errorMessage).toEqual(['Not a valid email']);
+			expect(response.body.errorMessage).toEqual([en.validation.email.invalid]);
 		});
 
 		it.each`
@@ -102,17 +113,14 @@ describe('Register', () => {
 			}
 		);
 
-		const SPECIAL_CHARACTER_ERROR =
-			'Password must contain at least a lowercase letter, a uppercase letter, a number and a special character ( ! @ # $ % )';
-
 		it.each`
-			password                       | message                                      | failCase
-			${'P@ssw0r'}                   | ${'Password must be 8 or more characters'}   | ${'shorter than 8 characters'}
-			${'P@ssw0rdxxxxxxxxxxxxxxxxx'} | ${'Password must be 24 or fewer characters'} | ${'with 24 characters or more'}
-			${'Passw0rd'}                  | ${SPECIAL_CHARACTER_ERROR}                   | ${'without special character'}
-			${'P@SSW0RD'}                  | ${SPECIAL_CHARACTER_ERROR}                   | ${'without lowercase letter'}
-			${'p@ssw0rd'}                  | ${SPECIAL_CHARACTER_ERROR}                   | ${'without uppercase letter'}
-			${'p@ssword'}                  | ${SPECIAL_CHARACTER_ERROR}                   | ${'without number'}
+			password                       | message                           | failCase
+			${'P@ssw0r'}                   | ${en.validation.password.min}     | ${'shorter than 8 characters'}
+			${'P@ssw0rdxxxxxxxxxxxxxxxxx'} | ${en.validation.password.max}     | ${'with 24 characters or more'}
+			${'Passw0rd'}                  | ${en.validation.password.invalid} | ${'without special character'}
+			${'P@SSW0RD'}                  | ${en.validation.password.invalid} | ${'without lowercase letter'}
+			${'p@ssw0rd'}                  | ${en.validation.password.invalid} | ${'without uppercase letter'}
+			${'p@ssword'}                  | ${en.validation.password.invalid} | ${'without number'}
 		`(
 			'should return $message message on register request with password $failCase',
 			async ({ password, message }) => {
@@ -142,9 +150,9 @@ describe('Register', () => {
 		);
 
 		it.each`
-			username                   | message                                           | failCase
-			${'u'}                     | ${'Username must be 2 or more characters long'}   | ${'shorter than 2 characters'}
-			${'useruseruseruseruseru'} | ${'Username must be 20 or fewer characters long'} | ${'with 20 characters or more'}
+			username                   | message                       | failCase
+			${'u'}                     | ${en.validation.username.min} | ${'shorter than 2 characters'}
+			${'useruseruseruseruseru'} | ${en.validation.username.max} | ${'with 20 characters or more'}
 		`(
 			'should return $message message when username $failCase',
 			async ({ username, message }) => {
@@ -168,7 +176,7 @@ describe('Register', () => {
 		it('should return success message on valid register request', async () => {
 			const response = await register(VALID_CREDENTIALS);
 
-			expect(response.body.message).toBe('User created successfully');
+			expect(response.body.message).toBe(en.user.create);
 		});
 
 		it('should save user in database on valid register request', async () => {
@@ -194,6 +202,94 @@ describe('Register', () => {
 			const userList = await prisma.user.findMany();
 
 			expect(userList[0].username).not.toBe(VALID_CREDENTIALS.password);
+		});
+	});
+
+	describe('Internationalization', () => {
+		it('should return error messages on register request without credentials', async () => {
+			const response = await register({}, { language: 'es' });
+
+			expect(response.body.errorMessage).toEqual([
+				es.validation.username.required,
+				es.validation.email.required,
+				es.validation.password.required,
+			]);
+		});
+
+		it.each`
+			field         | message                              | failCase
+			${'password'} | ${[es.validation.password.required]} | ${'without password field'}
+			${'email'}    | ${[es.validation.email.required]}    | ${'without email field'}
+			${'username'} | ${[es.validation.username.required]} | ${'without username field'}
+		`(
+			'should return error message on register request $failCase',
+			async ({ field, message }) => {
+				const credentials = { ...VALID_CREDENTIALS, [field]: undefined };
+
+				const response = await register(credentials, { language: 'es' });
+
+				expect(response.body.errorMessage).toEqual(message);
+			}
+		);
+
+		it('should return error message on register request with malformed email', async () => {
+			const response = await register(
+				{
+					...VALID_CREDENTIALS,
+					email: 'user@',
+				},
+				{ language: 'es' }
+			);
+
+			expect(response.body.errorMessage).toEqual([es.validation.email.invalid]);
+		});
+
+		it.each`
+			password                       | message                           | failCase
+			${'P@ssw0r'}                   | ${es.validation.password.min}     | ${'shorter than 8 characters'}
+			${'P@ssw0rdxxxxxxxxxxxxxxxxx'} | ${es.validation.password.max}     | ${'with 24 characters or more'}
+			${'Passw0rd'}                  | ${es.validation.password.invalid} | ${'without special character'}
+			${'P@SSW0RD'}                  | ${es.validation.password.invalid} | ${'without lowercase letter'}
+			${'p@ssw0rd'}                  | ${es.validation.password.invalid} | ${'without uppercase letter'}
+			${'p@ssword'}                  | ${es.validation.password.invalid} | ${'without number'}
+		`(
+			'should return $message message on register request with password $failCase',
+			async ({ password, message }) => {
+				const response = await register(
+					{
+						...VALID_CREDENTIALS,
+						password,
+					},
+					{ language: 'es' }
+				);
+
+				expect(response.body.errorMessage).toEqual([message]);
+			}
+		);
+
+		it.each`
+			username                   | message                       | failCase
+			${'u'}                     | ${es.validation.username.min} | ${'shorter than 2 characters'}
+			${'useruseruseruseruseru'} | ${es.validation.username.max} | ${'with 20 characters or more'}
+		`(
+			'should return $message message when username $failCase',
+			async ({ username, message }) => {
+				const response = await register(
+					{
+						...VALID_CREDENTIALS,
+						username,
+					},
+					{ language: 'es' }
+				);
+
+				expect(response.body.errorMessage).toEqual([message]);
+			}
+		);
+
+		it('should return success message on valid register request', async () => {
+			const response = await register(VALID_CREDENTIALS, { language: 'es' });
+
+			expect(response.body.message).toBe(es.user.create);
 		});
 	});
 });

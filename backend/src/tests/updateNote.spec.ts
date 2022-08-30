@@ -4,10 +4,13 @@ import jwt from 'jsonwebtoken';
 
 import app from '../app';
 import { prisma } from '../../prisma';
+import en from '../locales/en/translation.json';
+import es from '../locales/es/translation.json';
 
 type RequestOptions = {
 	auth?: string;
 	isArchive?: boolean;
+	language?: string;
 };
 
 const login = (credentials = {}) =>
@@ -50,6 +53,10 @@ const updateNote = (
 
 	if ('auth' in options) {
 		agent.set('Authorization', `Bearer ${options.auth}`);
+	}
+
+	if ('language' in options) {
+		agent.set('Accept-Language', options.language as string);
 	}
 
 	return agent.send(body);
@@ -135,7 +142,7 @@ describe('Update Note', () => {
 				}
 			);
 
-			expect(response.body.errorMessage).toBe('Note not found');
+			expect(response.body.errorMessage).toBe(en.note.not_found);
 		});
 
 		it('should return status 404 on update note request with invalid note', async () => {
@@ -171,7 +178,7 @@ describe('Update Note', () => {
 				}
 			);
 
-			expect(response.body.errorMessage).toBe('Note not found');
+			expect(response.body.errorMessage).toBe(en.note.not_found);
 		});
 
 		it('should return status 404 on update note request with invalid color', async () => {
@@ -225,7 +232,7 @@ describe('Update Note', () => {
 				}
 			);
 
-			expect(response.body.errorMessage).toBe('Color not found');
+			expect(response.body.errorMessage).toBe(en.color.not_found);
 		});
 	});
 
@@ -281,7 +288,7 @@ describe('Update Note', () => {
 				}
 			);
 
-			expect(response.body.message).toBe('Note updated successfully');
+			expect(response.body.message).toBe(en.note.update);
 		});
 
 		it('should update note on update note request success', async () => {
@@ -299,8 +306,6 @@ describe('Update Note', () => {
 					auth: accessToken,
 				}
 			);
-
-			console.log(createdNote.body);
 
 			const newColor = await createColor({ name: 'black', hex: '#000000' });
 
@@ -350,6 +355,110 @@ describe('Update Note', () => {
 			});
 
 			expect(note?.isArchive).toBe(true);
+		});
+	});
+
+	describe('Internationalization', () => {
+		it('should return message Note not found on update note request with invalid user', async () => {
+			const secret = process.env.ACCESS_TOKEN_SECRET as string;
+
+			const payload = {
+				user: {
+					id: 5,
+				},
+			};
+
+			const signOptions = {
+				expiresIn: '1m',
+			};
+
+			const accessToken = jwt.sign(payload, secret, signOptions);
+
+			const response = await updateNote(
+				1,
+				{},
+				{
+					auth: accessToken,
+					language: 'es',
+				}
+			);
+
+			expect(response.body.errorMessage).toBe(es.note.not_found);
+		});
+
+		it('should return message Note not found on update note request with invalid note', async () => {
+			await createUser();
+
+			const loginResponse = await login(VALID_CREDENTIALS);
+
+			const accessToken = loginResponse.body.accessToken;
+
+			const response = await updateNote(
+				1,
+				{},
+				{
+					auth: accessToken,
+					language: 'es',
+				}
+			);
+
+			expect(response.body.errorMessage).toBe(es.note.not_found);
+		});
+
+		it('should return message Note not found on update note request with invalid note', async () => {
+			await createUser();
+
+			const loginResponse = await login(VALID_CREDENTIALS);
+
+			const accessToken = loginResponse.body.accessToken;
+
+			const color = await createColor();
+
+			const createdNote = await createNote(
+				{ ...CREATE_NOTE_BODY, colorId: color.id },
+				{
+					auth: accessToken,
+				}
+			);
+
+			const response = await updateNote(
+				createdNote.body.id,
+				{ title: 'hello', content: 'bye', colorId: 9 },
+				{
+					auth: accessToken,
+					language: 'es',
+				}
+			);
+
+			expect(response.body.errorMessage).toBe(es.color.not_found);
+		});
+
+		it('should return message Note updated successfully on update note request success', async () => {
+			await createUser();
+
+			const loginResponse = await login(VALID_CREDENTIALS);
+
+			const accessToken = loginResponse.body.accessToken;
+
+			const color = await createColor();
+
+			const createdNote = await createNote(
+				{ ...CREATE_NOTE_BODY, colorId: color.id },
+				{
+					auth: accessToken,
+				}
+			);
+
+			const response = await updateNote(
+				createdNote.body.id,
+				{ title: 'nice', content: 'yes', colorId: color.id },
+				{
+					auth: accessToken,
+					language: 'es',
+				}
+			);
+
+			expect(response.body.message).toBe(es.note.update);
 		});
 	});
 });

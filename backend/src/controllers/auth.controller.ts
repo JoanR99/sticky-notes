@@ -34,7 +34,7 @@ export const login: RequestHandler = async (req, res) => {
 		}
 	}
 
-	throw new Unauthorized('Wrong credentials');
+	throw new Unauthorized(req.t('unauthorized'));
 };
 
 export const logout: RequestHandler = async (req, res) => {

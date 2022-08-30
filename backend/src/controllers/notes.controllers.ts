@@ -14,13 +14,13 @@ export const getNotes = async (req: CustomRequest, res: Response) => {
 	const booleanIsArchive: boolean = isArchive == 'false' ? false : true;
 
 	if (typeof isArchive === 'undefined') {
-		throw new BadRequest(['isArchive is not defined']);
+		throw new BadRequest([req.t('isArchive')]);
 	}
 
 	const user = await userService.findUserById(Number(id));
 
 	if (!user) {
-		throw new NotFound('User not found');
+		throw new NotFound(req.t('user.not_found'));
 	}
 
 	const notes = await notesService.findByUserIdAndIsArchive(
@@ -40,13 +40,13 @@ export const createNote = async (req: CustomRequest, res: Response) => {
 	const user = await userService.findUserById(Number(id));
 
 	if (!user) {
-		throw new NotFound('User not found');
+		throw new NotFound(req.t('user.not_found'));
 	}
 
 	const color = await colorService.findById(colorId);
 
 	if (!color) {
-		throw new NotFound('Color not found');
+		throw new NotFound(req.t('color.not_found'));
 	}
 
 	const note = await notesService.createNote(title, content, color.id, user.id);
@@ -63,7 +63,7 @@ export const getNote = async (req: CustomRequest, res: Response) => {
 	if (note) {
 		return res.status(200).json(note);
 	} else {
-		return res.status(400).json({ errorMessage: 'Note not found.' });
+		return res.status(400).json({ errorMessage: req.t('note.not_found') });
 	}
 };
 
@@ -73,11 +73,11 @@ export const deleteNote = async (req: CustomRequest, res: Response) => {
 
 	const note = await notesService.findByIdAndUserId(Number(id), Number(userId));
 
-	if (!note) throw new NotFound('Note not found');
+	if (!note) throw new NotFound(req.t('note.not_found'));
 
 	await notesService.deleteNote(Number(id));
 
-	return res.status(200).json({ message: 'Note deleted successfully' });
+	return res.status(200).json({ message: req.t('note.delete') });
 };
 
 export const updateNote = async (req: CustomRequest, res: Response) => {
@@ -88,7 +88,7 @@ export const updateNote = async (req: CustomRequest, res: Response) => {
 	const note = await notesService.findByIdAndUserId(Number(id), Number(userId));
 
 	if (!note) {
-		throw new NotFound('Note not found');
+		throw new NotFound(req.t('note.not_found'));
 	}
 
 	if (typeof isArchive === 'undefined') {
@@ -96,7 +96,7 @@ export const updateNote = async (req: CustomRequest, res: Response) => {
 			const newColor = await colorService.findById(colorId);
 
 			if (!newColor) {
-				throw new NotFound('Color not found');
+				throw new NotFound(req.t('color.not_found'));
 			}
 
 			await notesService.connectColor(note.id, newColor.id);
@@ -107,5 +107,5 @@ export const updateNote = async (req: CustomRequest, res: Response) => {
 		await notesService.updateIsArchive(note.id, Boolean(isArchive));
 	}
 
-	return res.status(200).json({ message: 'Note updated successfully' });
+	return res.status(200).json({ message: req.t('note.update') });
 };

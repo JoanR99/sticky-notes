@@ -3,9 +3,12 @@ import bcrypt from 'bcrypt';
 
 import app from '../app';
 import { prisma } from '../../prisma';
+import en from '../locales/en/translation.json';
+import es from '../locales/es/translation.json';
 
 type RequestOptions = {
 	auth?: string;
+	language?: string;
 };
 
 const login = (credentials = {}) =>
@@ -16,6 +19,10 @@ const createColor = (body = {}, options: RequestOptions = {}) => {
 
 	if ('auth' in options) {
 		agent.set('Authorization', `Bearer ${options.auth}`);
+	}
+
+	if ('language' in options) {
+		agent.set('Accept-Language', options.language as string);
 	}
 
 	return agent.send(body);
@@ -118,25 +125,25 @@ describe('Create Color', () => {
 			const response = await createColor({}, { auth: accessToken });
 
 			expect(response.body.errorMessage).toEqual([
-				'Name is required',
-				'Hex is required',
+				en.validation.name.required,
+				en.validation.hex.required,
 			]);
 		});
 
 		it.each`
 			field     | value            | message
-			${'name'} | ${undefined}     | ${'Name is required'}
-			${'hex'}  | ${undefined}     | ${'Hex is required'}
-			${'name'} | ${1}             | ${'Name must be a string'}
-			${'hex'}  | ${1}             | ${'Hex must be a string'}
-			${'name'} | ${null}          | ${'Name must be a string'}
-			${'hex'}  | ${null}          | ${'Hex must be a string'}
-			${'name'} | ${false}         | ${'Name must be a string'}
-			${'hex'}  | ${false}         | ${'Hex must be a string'}
-			${'name'} | ${{ hi: 'bye' }} | ${'Name must be a string'}
-			${'hex'}  | ${{ hi: 'bye' }} | ${'Hex must be a string'}
-			${'name'} | ${['hi']}        | ${'Name must be a string'}
-			${'hex'}  | ${['hi']}        | ${'Hex must be a string'}
+			${'name'} | ${undefined}     | ${en.validation.name.required}
+			${'hex'}  | ${undefined}     | ${en.validation.hex.required}
+			${'name'} | ${1}             | ${en.validation.name.type}
+			${'hex'}  | ${1}             | ${en.validation.hex.type}
+			${'name'} | ${null}          | ${en.validation.name.type}
+			${'hex'}  | ${null}          | ${en.validation.hex.type}
+			${'name'} | ${false}         | ${en.validation.name.type}
+			${'hex'}  | ${false}         | ${en.validation.hex.type}
+			${'name'} | ${{ hi: 'bye' }} | ${en.validation.name.type}
+			${'hex'}  | ${{ hi: 'bye' }} | ${en.validation.hex.type}
+			${'name'} | ${['hi']}        | ${en.validation.name.type}
+			${'hex'}  | ${['hi']}        | ${en.validation.hex.type}
 		`(
 			'should return $message on create note request when $field is $value',
 			async ({ field, value, message }) => {
@@ -207,5 +214,59 @@ describe('Create Color', () => {
 
 			expect(colorInDb).not.toBeUndefined();
 		});
+	});
+
+	describe('Internationalization', () => {
+		it('should return error messages on create note request without body', async () => {
+			await createUser();
+
+			const loginResponse = await login(VALID_CREDENTIALS);
+
+			const accessToken = loginResponse.body.accessToken;
+
+			const response = await createColor(
+				{},
+				{ auth: accessToken, language: 'es' }
+			);
+
+			expect(response.body.errorMessage).toEqual([
+				es.validation.name.required,
+				es.validation.hex.required,
+			]);
+		});
+
+		it.each`
+			field     | value            | message
+			${'name'} | ${undefined}     | ${es.validation.name.required}
+			${'hex'}  | ${undefined}     | ${es.validation.hex.required}
+			${'name'} | ${1}             | ${es.validation.name.type}
+			${'hex'}  | ${1}             | ${es.validation.hex.type}
+			${'name'} | ${null}          | ${es.validation.name.type}
+			${'hex'}  | ${null}          | ${es.validation.hex.type}
+			${'name'} | ${false}         | ${es.validation.name.type}
+			${'hex'}  | ${false}         | ${es.validation.hex.type}
+			${'name'} | ${{ hi: 'bye' }} | ${es.validation.name.type}
+			${'hex'}  | ${{ hi: 'bye' }} | ${es.validation.hex.type}
+			${'name'} | ${['hi']}        | ${es.validation.name.type}
+			${'hex'}  | ${['hi']}        | ${es.validation.hex.type}
+		`(
+			'should return $message on create note request when $field is $value',
+			async ({ field, value, message }) => {
+				await createUser();
+
+				const loginResponse = await login(VALID_CREDENTIALS);
+
+				const accessToken = loginResponse.body.accessToken;
+
+				const body = { ...CREATE_COLOR_BODY, [field]: value };
+
+				const response = await createColor(body, {
+					auth: accessToken,
+					language: 'es',
+				});
+
+				expect(response.body.errorMessage).toEqual([message]);
+			}
+		);
 	});
 });

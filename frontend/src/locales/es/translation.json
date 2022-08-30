@@ -40,6 +40,7 @@
 	"validation": {
 		"username": {
 			"required": "El nombre de usuario es requerido",
+			"min": "El nombre de usuario debe tener mínimo 2 caracteres",
 			"max": "El nombre de usuario debe tener máximo 20 caracteres"
 		},
 		"email": {

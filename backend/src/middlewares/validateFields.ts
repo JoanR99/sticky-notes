@@ -12,7 +12,9 @@ const validateFields =
 			if (result.success) {
 				return next();
 			} else {
-				const errorMessage = result.error.issues.map((error) => error.message);
+				const errorMessage = result.error.issues.map((error) =>
+					req.t(error.message)
+				);
 
 				throw new BadRequest(errorMessage);
 			}

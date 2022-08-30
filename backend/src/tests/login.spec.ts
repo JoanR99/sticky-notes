@@ -3,14 +3,27 @@ import bcrypt from 'bcrypt';
 
 import app from '../app';
 import { prisma } from '../../prisma';
+import en from '../locales/en/translation.json';
+import es from '../locales/es/translation.json';
+
+type RequestOptions = {
+	language?: string;
+};
 
 const VALID_CREDENTIALS = {
 	email: 'user@testing.com',
 	password: 'P4ssw0rd',
 };
 
-const login = (credentials = {}) =>
-	request(app).post('/api/auth/login').send(credentials);
+const login = (credentials = {}, options: RequestOptions = {}) => {
+	const agent = request(app).post('/api/auth/login');
+
+	if ('language' in options) {
+		agent.set('Accept-Language', options.language as string);
+	}
+
+	return agent.send(credentials);
+};
 
 const createUser = async (
 	credentials = { ...VALID_CREDENTIALS, username: 'user' }
@@ -46,15 +59,15 @@ describe('Login', () => {
 			const response = await login();
 
 			expect(response.body.errorMessage).toEqual([
-				'Email is required',
-				'Password is required',
+				en.validation.email.required,
+				en.validation.password.required,
 			]);
 		});
 
 		it.each`
-			field         | message                     | failCase
-			${'password'} | ${['Password is required']} | ${'without password field'}
-			${'email'}    | ${['Email is required']}    | ${'without email field'}
+			field         | message                              | failCase
+			${'password'} | ${[en.validation.password.required]} | ${'without password field'}
+			${'email'}    | ${[en.validation.email.required]}    | ${'without email field'}
 		`(
 			'should return error message on login request $failCase',
 			async ({ field, message }) => {
@@ -75,10 +88,10 @@ describe('Login', () => {
 		it('should return error message on login request with malformed email', async () => {
 			const response = await login({ ...VALID_CREDENTIALS, email: 'user@' });
 
-			expect(response.body.errorMessage).toEqual(['Not a valid email']);
+			expect(response.body.errorMessage).toEqual([en.validation.email.invalid]);
 		});
 
-		it('should return status 401 on login request with unregisted email', async () => {
+		it('should return status 401 on login request with unregistered email', async () => {
 			const response = await login({
 				email: 'user@testing.com',
 				password: 'P4ssw0rd',
@@ -87,13 +100,13 @@ describe('Login', () => {
 			expect(response.status).toBe(401);
 		});
 
-		it('should return error message on login request with unregisted email', async () => {
+		it('should return error message on login request with unregistered email', async () => {
 			const response = await login({
 				email: 'user@testing.com',
 				password: 'P4ssw0rd',
 			});
 
-			expect(response.body.errorMessage).toBe('Wrong credentials');
+			expect(response.body.errorMessage).toBe(en.unauthorized);
 		});
 
 		it('should return status 401 on login request with wrong password', async () => {
@@ -115,7 +128,7 @@ describe('Login', () => {
 				password: 'password',
 			});
 
-			expect(response.body.errorMessage).toBe('Wrong credentials');
+			expect(response.body.errorMessage).toBe(en.unauthorized);
 		});
 	});
 
@@ -154,6 +167,67 @@ describe('Login', () => {
 			const response = await login(VALID_CREDENTIALS);
 
 			expect(response.header['set-cookie']).not.toBeUndefined();
+		});
+	});
+
+	describe('Internationalization', () => {
+		it('should return error messages on login request without credentials', async () => {
+			const response = await login({}, { language: 'es' });
+
+			expect(response.body.errorMessage).toEqual([
+				es.validation.email.required,
+				es.validation.password.required,
+			]);
+		});
+
+		it.each`
+			field         | message                              | failCase
+			${'password'} | ${[es.validation.password.required]} | ${'without password field'}
+			${'email'}    | ${[es.validation.email.required]}    | ${'without email field'}
+		`(
+			'should return error message on login request $failCase',
+			async ({ field, message }) => {
+				const credentials = { ...VALID_CREDENTIALS, [field]: undefined };
+
+				const response = await login(credentials, { language: 'es' });
+
+				expect(response.body.errorMessage).toEqual(message);
+			}
+		);
+
+		it('should return error message on login request with malformed email', async () => {
+			const response = await login(
+				{ ...VALID_CREDENTIALS, email: 'user@' },
+				{ language: 'es' }
+			);
+
+			expect(response.body.errorMessage).toEqual([es.validation.email.invalid]);
+		});
+
+		it('should return error message on login request with unregistered email', async () => {
+			const response = await login(
+				{
+					email: 'user@testing.com',
+					password: 'P4ssw0rd',
+				},
+				{ language: 'es' }
+			);
+
+			expect(response.body.errorMessage).toBe(es.unauthorized);
+		});
+
+		it('should return error message on login request with wrong password', async () => {
+			await createUser();
+
+			const response = await login(
+				{
+					email: 'user@testing.com',
+					password: 'password',
+				},
+				{ language: 'es' }
+			);
+
+			expect(response.body.errorMessage).toBe(es.unauthorized);
 		});
 	});
 });

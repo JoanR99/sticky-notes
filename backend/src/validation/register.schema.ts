@@ -3,20 +3,20 @@ import { z } from 'zod';
 const registerSchema = z
 	.object({
 		username: z
-			.string({ required_error: 'Username is required' })
-			.min(2, 'Username must be 2 or more characters long')
-			.max(20, 'Username must be 20 or fewer characters long'),
+			.string({ required_error: 'validation.username.required' })
+			.min(2, 'validation.username.min')
+			.max(20, 'validation.username.max'),
 		email: z
-			.string({ required_error: 'Email is required' })
-			.email('Not a valid email'),
+			.string({ required_error: 'validation.email.required' })
+			.email('validation.email.invalid'),
 		password: z
-			.string({ required_error: 'Password is required' })
+			.string({ required_error: 'validation.password.required' })
 			.regex(
 				/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%])/,
-				'Password must contain at least a lowercase letter, a uppercase letter, a number and a special character ( ! @ # $ % )'
+				'validation.password.invalid'
 			)
-			.min(8, 'Password must be 8 or more characters')
-			.max(24, 'Password must be 24 or fewer characters'),
+			.min(8, 'validation.password.min')
+			.max(24, 'validation.password.max'),
 	})
 	.required();
 

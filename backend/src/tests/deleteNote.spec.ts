@@ -4,10 +4,13 @@ import jwt from 'jsonwebtoken';
 
 import app from '../app';
 import { prisma } from '../../prisma';
+import en from '../locales/en/translation.json';
+import es from '../locales/es/translation.json';
 
 type RequestOptions = {
 	auth?: string;
 	isArchive?: boolean;
+	language?: string;
 };
 
 const login = (credentials = {}) =>
@@ -41,11 +44,15 @@ const createUser = async (
 const createColor = (body = { name: 'white', hex: '#fffffff' }) =>
 	prisma.color.create({ data: body });
 
-const deleteNotes = (id: number = 1, options: RequestOptions = {}) => {
+const deleteNote = (id: number = 1, options: RequestOptions = {}) => {
 	const agent = request(app).delete(`/api/notes/${id}`);
 
 	if ('auth' in options) {
 		agent.set('Authorization', `Bearer ${options.auth}`);
+	}
+
+	if ('language' in options) {
+		agent.set('Accept-Language', options.language as string);
 	}
 
 	return agent.send();
@@ -65,13 +72,13 @@ const CREATE_NOTE_BODY = {
 describe('Delete Note', () => {
 	describe('Failing cases', () => {
 		it('should return status 401 on delete note request without accessToken', async () => {
-			const response = await deleteNotes();
+			const response = await deleteNote();
 
 			expect(response.status).toBe(401);
 		});
 
 		it('should return status 403 on delete note request with invalid accessToken', async () => {
-			const response = await deleteNotes(1, {
+			const response = await deleteNote(1, {
 				auth: 'invalid-token',
 			});
 
@@ -93,7 +100,7 @@ describe('Delete Note', () => {
 
 			const accessToken = jwt.sign(payload, secret, signOptions);
 
-			const response = await deleteNotes(1, {
+			const response = await deleteNote(1, {
 				auth: accessToken,
 			});
 
@@ -115,11 +122,11 @@ describe('Delete Note', () => {
 
 			const accessToken = jwt.sign(payload, secret, signOptions);
 
-			const response = await deleteNotes(1, {
+			const response = await deleteNote(1, {
 				auth: accessToken,
 			});
 
-			expect(response.body.errorMessage).toBe('Note not found');
+			expect(response.body.errorMessage).toBe(en.note.not_found);
 		});
 
 		it('should return status 404 on delete note request with invalid note', async () => {
@@ -129,7 +136,7 @@ describe('Delete Note', () => {
 
 			const accessToken = loginResponse.body.accessToken;
 
-			const response = await deleteNotes(1, {
+			const response = await deleteNote(1, {
 				auth: accessToken,
 			});
 
@@ -143,11 +150,11 @@ describe('Delete Note', () => {
 
 			const accessToken = loginResponse.body.accessToken;
 
-			const response = await deleteNotes(1, {
+			const response = await deleteNote(1, {
 				auth: accessToken,
 			});
 
-			expect(response.body.errorMessage).toBe('Note not found');
+			expect(response.body.errorMessage).toBe(en.note.not_found);
 		});
 	});
 
@@ -168,7 +175,7 @@ describe('Delete Note', () => {
 				}
 			);
 
-			const response = await deleteNotes(cratedNote.body.id, {
+			const response = await deleteNote(cratedNote.body.id, {
 				auth: accessToken,
 			});
 
@@ -191,11 +198,11 @@ describe('Delete Note', () => {
 				}
 			);
 
-			const response = await deleteNotes(cratedNote.body.id, {
+			const response = await deleteNote(cratedNote.body.id, {
 				auth: accessToken,
 			});
 
-			expect(response.body.message).toBe('Note deleted successfully');
+			expect(response.body.message).toBe(en.note.delete);
 		});
 
 		it('should delete note on delete note request success', async () => {
@@ -214,7 +221,7 @@ describe('Delete Note', () => {
 				}
 			);
 
-			await deleteNotes(cratedNote.body.id, {
+			await deleteNote(cratedNote.body.id, {
 				auth: accessToken,
 			});
 
@@ -223,6 +230,70 @@ describe('Delete Note', () => {
 			});
 
 			expect(note).toBeNull();
+		});
+	});
+
+	describe('Internationalization', () => {
+		it('should return message Note not found on delete note request with invalid user', async () => {
+			const secret = process.env.ACCESS_TOKEN_SECRET as string;
+
+			const payload = {
+				user: {
+					id: 5,
+				},
+			};
+
+			const signOptions = {
+				expiresIn: '1m',
+			};
+
+			const accessToken = jwt.sign(payload, secret, signOptions);
+
+			const response = await deleteNote(1, {
+				auth: accessToken,
+				language: 'es',
+			});
+
+			expect(response.body.errorMessage).toBe(es.note.not_found);
+		});
+
+		it('should return message Note not found on delete note request with invalid note', async () => {
+			await createUser();
+
+			const loginResponse = await login(VALID_CREDENTIALS);
+
+			const accessToken = loginResponse.body.accessToken;
+
+			const response = await deleteNote(1, {
+				auth: accessToken,
+				language: 'es',
+			});
+
+			expect(response.body.errorMessage).toBe(es.note.not_found);
+		});
+
+		it('should return message Note deleted successfully on delete note request success', async () => {
+			await createUser();
+
+			const loginResponse = await login(VALID_CREDENTIALS);
+
+			const accessToken = loginResponse.body.accessToken;
+
+			const color = await createColor();
+
+			const cratedNote = await createNote(
+				{ ...CREATE_NOTE_BODY, colorId: color.id },
+				{
+					auth: accessToken,
+				}
+			);
+
+			const response = await deleteNote(cratedNote.body.id, {
+				auth: accessToken,
+				language: 'es',
+			});
+
+			expect(response.body.message).toBe(es.note.delete);
 		});
 	});
 });

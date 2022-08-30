@@ -7,5 +7,5 @@ export const createUser: RequestHandler = async (req, res) => {
 
 	await userService.createUser(username, email, password);
 
-	res.status(201).json({ message: 'User created successfully' });
+	res.status(201).json({ message: req.t('user.create') });
 };
