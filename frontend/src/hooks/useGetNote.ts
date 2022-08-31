@@ -3,8 +3,12 @@ import { AxiosInstance } from 'axios';
 
 import { getNote } from '../services/notes.services';
 
-const useGetNote = (privateRequest: AxiosInstance, id: number) => {
-	const request = getNote(privateRequest);
+const useGetNote = (
+	privateRequest: AxiosInstance,
+	id: number,
+	language: string
+) => {
+	const request = getNote(privateRequest, language);
 
 	return useQuery(['note', { id: Number(id) }], async () => await request(id));
 };

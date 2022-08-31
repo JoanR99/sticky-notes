@@ -13,9 +13,9 @@ import { AxiosError } from 'axios';
 import { Box } from '@mui/system';
 
 const Logout = () => {
-	const { t } = useTranslation('translation');
+	const { t, i18n } = useTranslation('translation');
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const { mutate: logoutUser, isLoading } = useLogout();
+	const { mutate: logoutUser, isLoading } = useLogout(i18n.language);
 	const navigate = useNavigate();
 	const { changeAccessToken } = useAuth();
 	const queryClient = useQueryClient();

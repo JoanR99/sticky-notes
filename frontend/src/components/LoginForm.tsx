@@ -20,8 +20,8 @@ import { useAuth } from '../context/AuthProvider';
 import { AxiosError } from 'axios';
 
 const LoginForm = () => {
-	const { t } = useTranslation('translation');
-	const { mutate: login, isLoading } = useLogin();
+	const { t, i18n } = useTranslation('translation');
+	const { mutate: login, isLoading } = useLogin(i18n.language);
 
 	interface OwnLocation extends Location {
 		state: {

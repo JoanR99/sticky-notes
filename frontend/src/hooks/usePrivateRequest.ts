@@ -5,7 +5,8 @@ import { getRefreshToken } from '../services/auth.services';
 
 const usePrivateRequest = (
 	accessToken: string,
-	changeAccessToken: (token: string) => void
+	changeAccessToken: (token: string) => void,
+	language: string
 ) => {
 	useEffect(() => {
 		const requestIntercept = privateRequest.interceptors.request.use(
@@ -28,7 +29,9 @@ const usePrivateRequest = (
 				if (error?.response?.status === 403 && !prevRequest?.sent) {
 					prevRequest.sent = true;
 					console.log('intercept');
-					const { accessToken: newAccessToken } = await getRefreshToken();
+					const { accessToken: newAccessToken } = await getRefreshToken(
+						language
+					);
 					changeAccessToken(newAccessToken);
 					prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
 

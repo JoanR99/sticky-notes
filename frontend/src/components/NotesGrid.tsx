@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import useGetNotes from '../hooks/useGetNotes';
 import NoteList from '../components/NoteList';
 import FullScreenLoader from '../components/FullScreenLoader';
@@ -6,13 +8,19 @@ import { useAuth } from '../context/AuthProvider';
 import { useFilter } from '../context/FilterProvider';
 
 const NotesGrid = () => {
+	const { i18n } = useTranslation();
 	const { accessToken, changeAccessToken } = useAuth();
 	const { colorFilter, searchFilter } = useFilter();
-	const privateRequest = usePrivateRequest(accessToken, changeAccessToken);
+	const privateRequest = usePrivateRequest(
+		accessToken,
+		changeAccessToken,
+		i18n.language
+	);
 	const { isLoading, data: notes } = useGetNotes(
 		privateRequest,
 		colorFilter,
-		searchFilter
+		searchFilter,
+		i18n.language
 	);
 
 	return (

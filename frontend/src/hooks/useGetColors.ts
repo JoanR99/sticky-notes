@@ -3,8 +3,8 @@ import { AxiosInstance } from 'axios';
 
 import { getColors } from '../services/colors.services';
 
-const useGetColors = (privateRequest: AxiosInstance) => {
-	const request = getColors(privateRequest);
+const useGetColors = (privateRequest: AxiosInstance, language: string) => {
+	const request = getColors(privateRequest, language);
 
 	return useQuery('colors', async () => await request());
 };

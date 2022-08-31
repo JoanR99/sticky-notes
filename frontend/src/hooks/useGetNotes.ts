@@ -8,10 +8,11 @@ import filterNotes from '../utils/filter';
 const useGetNotes = (
 	privateRequest: AxiosInstance,
 	colorFilter: string,
-	searchFilter: string
+	searchFilter: string,
+	language: string
 ) => {
 	const isArchive = false;
-	const request = getNotes(privateRequest);
+	const request = getNotes(privateRequest, language);
 
 	return useQuery(
 		['notes', { isArchive }],

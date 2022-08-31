@@ -18,10 +18,17 @@ interface Props {
 }
 
 const DeleteNoteModal = ({ show, handleClose, id }: Props) => {
-	const { t } = useTranslation('translation');
+	const { t, i18n } = useTranslation('translation');
 	const { accessToken, changeAccessToken } = useAuth();
-	const privateRequest = usePrivateRequest(accessToken, changeAccessToken);
-	const { mutate: deleteNote, isLoading } = useDeleteNote(privateRequest);
+	const privateRequest = usePrivateRequest(
+		accessToken,
+		changeAccessToken,
+		i18n.language
+	);
+	const { mutate: deleteNote, isLoading } = useDeleteNote(
+		privateRequest,
+		i18n.language
+	);
 	const handleClick = async () => {
 		await deleteNote(id, {
 			onSuccess: () => {

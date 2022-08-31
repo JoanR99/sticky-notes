@@ -19,10 +19,17 @@ interface Props {
 }
 
 const ArchiveNoteModal = ({ show, handleClose, note }: Props) => {
-	const { t } = useTranslation('translation');
+	const { t, i18n } = useTranslation('translation');
 	const { accessToken, changeAccessToken } = useAuth();
-	const privateRequest = usePrivateRequest(accessToken, changeAccessToken);
-	const { mutate: updateNote, isLoading } = useUpdateNote(privateRequest);
+	const privateRequest = usePrivateRequest(
+		accessToken,
+		changeAccessToken,
+		i18n.language
+	);
+	const { mutate: updateNote, isLoading } = useUpdateNote(
+		privateRequest,
+		i18n.language
+	);
 	const handleClick = async () => {
 		await updateNote(
 			{ id: note?.id, newNote: { isArchive: !note?.isArchive } },

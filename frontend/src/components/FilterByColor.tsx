@@ -8,10 +8,14 @@ import usePrivateRequest from '../hooks/usePrivateRequest';
 import { useAuth } from '../context/AuthProvider';
 
 const FilterByColor = () => {
-	const { t } = useTranslation('translation');
+	const { t, i18n } = useTranslation('translation');
 	const { accessToken, changeAccessToken } = useAuth();
-	const privateRequest = usePrivateRequest(accessToken, changeAccessToken);
-	const { data: colors } = useGetColors(privateRequest);
+	const privateRequest = usePrivateRequest(
+		accessToken,
+		changeAccessToken,
+		i18n.language
+	);
+	const { data: colors } = useGetColors(privateRequest, i18n.language);
 	const { changeColorFilter, colorFilter } = useFilter();
 
 	return (

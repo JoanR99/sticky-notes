@@ -22,11 +22,18 @@ interface Props {
 }
 
 const EditNoteModal = ({ handleClose, show, note }: Props) => {
-	const { t } = useTranslation('translation');
+	const { t, i18n } = useTranslation('translation');
 	const queryClient = useQueryClient();
 	const { accessToken, changeAccessToken } = useAuth();
-	const privateRequest = usePrivateRequest(accessToken, changeAccessToken);
-	const { mutate: updateNote, isLoading } = useUpdateNote(privateRequest);
+	const privateRequest = usePrivateRequest(
+		accessToken,
+		changeAccessToken,
+		i18n.language
+	);
+	const { mutate: updateNote, isLoading } = useUpdateNote(
+		privateRequest,
+		i18n.language
+	);
 	const colors = queryClient.getQueryData('colors') as Color[];
 
 	const noteSchema = object({

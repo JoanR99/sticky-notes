@@ -3,8 +3,8 @@ import { AxiosInstance } from 'axios';
 
 import { deleteNote } from '../services/notes.services';
 
-const useDeleteNote = (privateRequest: AxiosInstance) => {
-	const request = deleteNote(privateRequest);
+const useDeleteNote = (privateRequest: AxiosInstance, language: string) => {
+	const request = deleteNote(privateRequest, language);
 	const queryClient = useQueryClient();
 
 	return useMutation(async (id: number) => await request(id), {

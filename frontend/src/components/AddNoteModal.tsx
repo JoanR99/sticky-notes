@@ -22,10 +22,17 @@ const AddNoteModal = ({
 	handleClose: () => void;
 	show: boolean;
 }) => {
-	const { t } = useTranslation('translation');
+	const { t, i18n } = useTranslation('translation');
 	const { accessToken, changeAccessToken } = useAuth();
-	const privateRequest = usePrivateRequest(accessToken, changeAccessToken);
-	const { mutate: addNote, isLoading } = useAddNote(privateRequest);
+	const privateRequest = usePrivateRequest(
+		accessToken,
+		changeAccessToken,
+		i18n.language
+	);
+	const { mutate: addNote, isLoading } = useAddNote(
+		privateRequest,
+		i18n.language
+	);
 	const queryClient = useQueryClient();
 	const colors = queryClient.getQueryData('colors') as Color[];
 

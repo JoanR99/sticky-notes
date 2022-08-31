@@ -1,4 +1,5 @@
 import Container from '@mui/material/Container';
+import { useTranslation } from 'react-i18next';
 
 import useGetArchivedNotes from '../hooks/useGetArchivedNotes';
 import NoteList from '../components/NoteList';
@@ -8,13 +9,19 @@ import { useAuth } from '../context/AuthProvider';
 import { useFilter } from '../context/FilterProvider';
 
 const ArchivedNotes = () => {
+	const { i18n } = useTranslation();
 	const { accessToken, changeAccessToken } = useAuth();
-	const privateRequest = usePrivateRequest(accessToken, changeAccessToken);
+	const privateRequest = usePrivateRequest(
+		accessToken,
+		changeAccessToken,
+		i18n.language
+	);
 	const { colorFilter, searchFilter } = useFilter();
 	const { isLoading, data: notes } = useGetArchivedNotes(
 		privateRequest,
 		colorFilter,
-		searchFilter
+		searchFilter,
+		i18n.language
 	);
 
 	return (
