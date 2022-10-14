@@ -28,8 +28,6 @@ export const getNotes = async (req: CustomRequest, res: Response) => {
 		booleanIsArchive
 	);
 
-	console.log(notes);
-
 	res.status(200).json(notes);
 };
 
