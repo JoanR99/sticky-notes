@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
 import cookieParser from 'cookie-parser';
 import i18n from 'i18next';
 import Backend from 'i18next-fs-backend';
