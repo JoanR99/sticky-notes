@@ -1,8 +1,7 @@
 const allowedOrigins: string[] = [
-	'http://127.0.0.1:8080',
-	'http://127.0.0.1:3000',
-	'http://localhost:5173',
-	'http://localhost:8080',
+	'https://sticky-notes-neon.vercel.app',
+	'https://sticky-notes-romerojoan1999-gmailcom.vercel.app',
+	'https://sticky-notes-git-main-romerojoan1999-gmailcom.vercel.app/',
 ];
 
 export default allowedOrigins;
