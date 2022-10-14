@@ -86,7 +86,7 @@ describe('Delete Note', () => {
 		});
 
 		it('should return status 404 on delete note request with invalid user', async () => {
-			const secret = process.env.ACCESS_TOKEN_SECRET as string;
+			const secret = process.env.ACCESS_TOKEN_SECRET!;
 
 			const payload = {
 				user: {
@@ -108,7 +108,7 @@ describe('Delete Note', () => {
 		});
 
 		it('should return message Note not found on delete note request with invalid user', async () => {
-			const secret = process.env.ACCESS_TOKEN_SECRET as string;
+			const secret = process.env.ACCESS_TOKEN_SECRET!;
 
 			const payload = {
 				user: {
@@ -235,7 +235,7 @@ describe('Delete Note', () => {
 
 	describe('Internationalization', () => {
 		it('should return message Note not found on delete note request with invalid user', async () => {
-			const secret = process.env.ACCESS_TOKEN_SECRET as string;
+			const secret = process.env.ACCESS_TOKEN_SECRET!;
 
 			const payload = {
 				user: {

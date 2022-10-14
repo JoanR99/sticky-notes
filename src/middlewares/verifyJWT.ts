@@ -18,7 +18,7 @@ export const verifyJWT: RequestHandler = async (req, res, next) => {
 
 		const token = authHeader.split(' ')[1];
 
-		const publicKey = process.env.ACCESS_TOKEN_SECRET ?? '';
+		const publicKey = process.env.ACCESS_TOKEN_SECRET!;
 
 		const tokenPayload = await authService.validateToken(token, publicKey);
 

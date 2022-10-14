@@ -98,7 +98,7 @@ describe('Get Notes', () => {
 		});
 
 		it('should return status 404 on get note request with invalid user', async () => {
-			const secret = process.env.ACCESS_TOKEN_SECRET as string;
+			const secret = process.env.ACCESS_TOKEN_SECRET!;
 
 			const payload = {
 				user: {
@@ -121,7 +121,7 @@ describe('Get Notes', () => {
 		});
 
 		it('should return message User not found on get note request with invalid user', async () => {
-			const secret = process.env.ACCESS_TOKEN_SECRET as string;
+			const secret = process.env.ACCESS_TOKEN_SECRET!;
 
 			const payload = {
 				user: {
@@ -265,7 +265,7 @@ describe('Get Notes', () => {
 
 	describe('Internationalization', () => {
 		it('should return message User not found on get note request with invalid user', async () => {
-			const secret = process.env.ACCESS_TOKEN_SECRET as string;
+			const secret = process.env.ACCESS_TOKEN_SECRET!;
 
 			const payload = {
 				user: {

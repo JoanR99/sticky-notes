@@ -80,7 +80,7 @@ export const refreshToken: RequestHandler = async (req, res) => {
 
 		if (!user) return res.sendStatus(403);
 
-		const secretToken = process.env.REFRESH_TOKEN_SECRET as string;
+		const secretToken = process.env.REFRESH_TOKEN_SECRET!;
 
 		const tokenPayload = await authService.validateToken(
 			refreshToken,
