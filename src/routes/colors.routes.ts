@@ -14,7 +14,7 @@ const router = Router();
 router
 	.route('/')
 	.get(verifyJWT, asyncHandler(getColors))
-	.post(verifyJWT, validateCreateColorFields, asyncHandler(createColor));
+	.post(validateCreateColorFields, asyncHandler(createColor));
 
 router.route('/:id').delete(verifyJWT, asyncHandler(deleteColor));
 
