@@ -40,6 +40,8 @@ export const login: RequestHandler = async (req, res) => {
 export const logout: RequestHandler = async (req, res) => {
 	const cookies = req.cookies;
 
+	console.log(cookies);
+
 	if (!cookies?.jwt) return res.sendStatus(204);
 
 	const refreshToken = cookies.jwt;

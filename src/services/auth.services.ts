@@ -19,7 +19,7 @@ export const createAccessToken = (userId: number) => {
 	const secret = process.env.ACCESS_TOKEN_SECRET!;
 
 	const signOptions: SignOptions = {
-		expiresIn: '1m',
+		expiresIn: '1d',
 	};
 
 	return signToken(payload, secret, signOptions);
@@ -35,7 +35,7 @@ export const createRefreshToken = (userId: number) => {
 	const secret = process.env.REFRESH_TOKEN_SECRET!;
 
 	const signOptions: SignOptions = {
-		expiresIn: '1d',
+		expiresIn: '7d',
 	};
 
 	return signToken(payload, secret, signOptions);
