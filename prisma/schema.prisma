@@ -7,7 +7,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      =  env("DATABASE_URL")
+  url      = env("DATABASE_URL")
+  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
@@ -30,15 +31,6 @@ model Note {
   isArchive Boolean  @default(false)
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
-  color Color @relation(fields: [colorId], references: [id])
-  colorId Int
-}
+  color String
 
-model Color {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name     String   
-  hex   String
-  notes Note[]
 }

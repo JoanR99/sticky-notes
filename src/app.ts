@@ -5,10 +5,8 @@ import i18n from 'i18next';
 import Backend from 'i18next-fs-backend';
 import middleware from 'i18next-http-middleware';
 
-import notesRouter from './routes/notes.routes';
-import userRouter from './routes/user.routes';
-import colorsRouter from './routes/colors.routes';
-import authRouter from './routes/auth.routes';
+import notesRouter from './modules/note/note.route';
+import userRouter from './modules/user/user.routes';
 import errorHandler from './middlewares/error.middleware';
 import corsOptions from './config/corsOptions';
 import credentials from './middlewares/credentials';
@@ -39,8 +37,6 @@ app.use(cookieParser());
 
 app.use('/api/notes', notesRouter);
 app.use('/api/users', userRouter);
-app.use('/api/colors', colorsRouter);
-app.use('/api/auth', authRouter);
 
 app.use(errorHandler);
 

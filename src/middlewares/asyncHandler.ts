@@ -1,13 +1,10 @@
-import { RequestHandler, Response, NextFunction } from 'express';
-import { CustomRequest } from './verifyJWT';
-
-type Callback = (req: CustomRequest, res: Response, nex: NextFunction) => void;
+import { RequestHandler } from 'express';
 
 const asyncHandler =
-	(callback: Callback): RequestHandler =>
+	(callback: any): RequestHandler =>
 	async (req, res, next) => {
 		try {
-			await callback(req as CustomRequest, res, next);
+			await callback(req, res, next);
 		} catch (e) {
 			next(e);
 		}

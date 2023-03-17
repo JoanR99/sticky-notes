@@ -1,10 +1,15 @@
-import { RequestHandler, Request } from 'express';
+import { RequestHandler } from 'express';
 import dotenv from 'dotenv';
 dotenv.config();
-import * as authService from '../services/auth.services';
+import NotFound from '../errors/NotFound';
+import * as userService from '../modules/user/user.services';
 
-export interface CustomRequest extends Request {
-	user: string;
+declare global {
+	namespace Express {
+		interface Request {
+			user: string;
+		}
+	}
 }
 
 export const verifyJWT: RequestHandler = async (req, res, next) => {
@@ -20,9 +25,15 @@ export const verifyJWT: RequestHandler = async (req, res, next) => {
 
 		const publicKey = process.env.ACCESS_TOKEN_SECRET!;
 
-		const tokenPayload = await authService.validateToken(token, publicKey);
+		const tokenPayload = await userService.validateToken(token, publicKey);
 
-		(req as CustomRequest).user = tokenPayload.user.id.toString();
+		const user = await userService.findById(Number(tokenPayload.user.id));
+
+		if (!user) {
+			throw new NotFound(req.t('user.not_found'));
+		}
+
+		req.user = tokenPayload.user.id.toString();
 
 		return next();
 	} catch (e) {
