@@ -11,7 +11,7 @@ const router = Router();
 
 router.route('/').post(validateRegisterFields, asyncHandler(createUser));
 router.route('/login').post(validateLoginFields, asyncHandler(login));
-router.route('/logout').get(asyncHandler(logout));
+router.route('/logout').post(asyncHandler(logout));
 router.route('/refresh').get(refreshToken);
 
 export default router;
