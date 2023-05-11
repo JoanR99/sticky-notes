@@ -5,25 +5,28 @@ export const userSchema = z.object({
 	id: z.number(),
 	username: z
 		.string({
-			required_error: 'Name is required',
-			invalid_type_error: 'Name must be a string',
+			required_error: 'validation.username.required',
+			invalid_type_error: 'validation.username.type',
 		})
-		.min(2)
-		.max(20),
+		.min(2, 'validation.username.min')
+		.max(20, 'validation.username.max'),
 	email: z
 		.string({
-			required_error: 'Email is required',
-			invalid_type_error: 'Email must be a string',
+			required_error: 'validation.email.required',
+			invalid_type_error: 'validation.email.type',
 		})
-		.email(),
+		.email('validation.email.invalid'),
 	password: z
-		.string({ required_error: 'Password is required' })
+		.string({
+			required_error: 'validation.password.required',
+			invalid_type_error: 'validation.email.type',
+		})
 		.regex(
 			/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%])/,
-			'Invalid Password'
+			'validation.password.invalid'
 		)
-		.min(8)
-		.max(24),
+		.min(8, 'validation.password.min')
+		.max(24, 'validation.password.max'),
 	refreshToken: z.string(),
 	createdAt: z.date(),
 	updatedAt: z.date(),

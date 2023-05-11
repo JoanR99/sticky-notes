@@ -1,9 +1,5 @@
 {
 	"unauthorized": "Credenciales equivocadas",
-	"color": {
-		"not_found": "No se encontró el color",
-		"delete": "Se elimino el color correctamente"
-	},
 	"user": {
 		"not_found": "No se encontró el usuario",
 		"create": "Usuario creado correctamente"
@@ -15,14 +11,6 @@
 	},
 	"isArchive": "isArchive no esta definido",
 	"validation": {
-		"name": {
-			"required": "El nombre es requerido",
-			"type": "El nombre debe ser un string"
-		},
-		"hex": {
-			"required": "El hex es requerido",
-			"type": "El hex debe ser un string"
-		},
 		"title": {
 			"required": "El titulo es requerido",
 			"type": "El titulo debe ser un string"
@@ -31,22 +19,26 @@
 			"required": "El contenido es requerido",
 			"type": "El contenido debe ser un string"
 		},
-		"color_id": {
+		"color": {
 			"required": "El color es requerido",
-			"type": "El color debe ser un numero"
+			"type": "El color debe ser un string",
+			"invalid": "Color invalido"
 		},
 		"email": {
 			"required": "El correo electrónico es requerido",
+			"type": "El correo electrónico debe ser un string",
 			"invalid": "El correo electrónico es invalido"
 		},
 		"password": {
 			"required": "La contraseña es requerida",
+			"type": "El contraseña debe ser un string",
 			"invalid": "La contraseña debe contener al menos una letra minúscula, una letra mayúscula, un numero y un carácter especial ( ! @ # $ % )",
 			"min": "La contraseña debe tener al menos 8 caracteres",
 			"max": "La contraseña debe tener máximo 24 caracteres"
 		},
 		"username": {
 			"required": "El nombre de usuario es requerido",
+			"type": "El nombre de usuario debe ser un string",
 			"min": "El nombre de usuario debe tener mínimo 2 caracteres",
 			"max": "El nombre de usuario debe tener máximo 20 caracteres"
 		}

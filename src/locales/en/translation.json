@@ -1,9 +1,5 @@
 {
 	"unauthorized": "Wrong credentials",
-	"color": {
-		"not_found": "Color not found",
-		"delete": "Color deleted successfully"
-	},
 	"user": {
 		"not_found": "User not found",
 		"create": "User created successfully"
@@ -31,9 +27,10 @@
 			"required": "Content is required",
 			"type": "Content must be a string"
 		},
-		"color_id": {
+		"color": {
 			"required": "Color is required",
-			"type": "Color must be a number"
+			"type": "Color must be a string",
+			"invalid": "Invalid Color"
 		},
 		"email": {
 			"required": "Email is required",
