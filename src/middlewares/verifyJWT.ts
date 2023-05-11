@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import dotenv from 'dotenv';
 dotenv.config();
 import NotFound from '../errors/NotFound';
+import Unauthorized from '../errors/Unauthorized';
 import * as userService from '../modules/user/user.services';
 
 declare global {
@@ -12,20 +13,29 @@ declare global {
 	}
 }
 
-export const verifyJWT: RequestHandler = async (req, res, next) => {
+export const verifyJWT: RequestHandler = async (req, _res, next) => {
 	try {
 		const authHeader = req.headers.authorization || req.headers.Authorization;
 
-		if (typeof authHeader === 'undefined' || Array.isArray(authHeader))
-			return res.sendStatus(401);
+		if (typeof authHeader === 'undefined' || Array.isArray(authHeader)) {
+			throw new Unauthorized(req.t('unauthorized'));
+		}
 
-		if (!authHeader?.startsWith('Bearer ')) return res.sendStatus(401);
+		if (!authHeader?.startsWith('Bearer ')) {
+			throw new Unauthorized(req.t('unauthorized'));
+		}
 
 		const token = authHeader.split(' ')[1];
 
 		const publicKey = process.env.ACCESS_TOKEN_SECRET!;
 
-		const tokenPayload = await userService.validateToken(token, publicKey);
+		let tokenPayload;
+
+		try {
+			tokenPayload = await userService.validateToken(token, publicKey);
+		} catch (e) {
+			throw new Unauthorized(req.t('unauthorized'));
+		}
 
 		const user = await userService.findById(Number(tokenPayload.user.id));
 
@@ -37,6 +47,6 @@ export const verifyJWT: RequestHandler = async (req, res, next) => {
 
 		return next();
 	} catch (e) {
-		return res.sendStatus(403);
+		return next(e);
 	}
 };
