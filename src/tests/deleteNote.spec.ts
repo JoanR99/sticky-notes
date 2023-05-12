@@ -1,299 +1,295 @@
-// import request from 'supertest';
-// import bcrypt from 'bcrypt';
-// import jwt from 'jsonwebtoken';
-
-// import app from '../app';
-// import { prisma } from '../../prisma';
-// import en from '../locales/en/translation.json';
-// import es from '../locales/es/translation.json';
-
-// type RequestOptions = {
-// 	auth?: string;
-// 	isArchive?: boolean;
-// 	language?: string;
-// };
-
-// const login = (credentials = {}) =>
-// 	request(app).post('/api/auth/login').send(credentials);
-
-// const createNote = (body = {}, options: RequestOptions = {}) => {
-// 	const agent = request(app).post('/api/notes');
-
-// 	if ('auth' in options) {
-// 		agent.set('Authorization', `Bearer ${options.auth}`);
-// 	}
-
-// 	return agent.send(body);
-// };
-
-// const createUser = async (
-// 	body = {
-// 		username: 'user',
-// 		email: 'user@testing.com',
-// 		password: 'P4ssw0rd',
-// 	}
-// ) => {
-// 	if (typeof body.password === 'string') {
-// 		const hash = await bcrypt.hash(body.password, 10);
-// 		body.password = hash;
-// 	}
+import request from 'supertest';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
+import app from '../app';
+import { prisma } from '../../prisma';
+import en from '../locales/en/translation.json';
+import es from '../locales/es/translation.json';
+import { CreateNoteInput } from '../modules/note/note.schema';
+
+type RequestOptions = {
+	auth?: string;
+	isArchive?: boolean;
+	language?: string;
+};
+
+const login = (credentials = {}) =>
+	request(app).post('/api/users/login').send(credentials);
+
+const createNote = (
+	body: Partial<CreateNoteInput> = {},
+	options: RequestOptions = {}
+) => {
+	const agent = request(app).post('/api/notes');
+
+	if ('auth' in options) {
+		agent.set('Authorization', `Bearer ${options.auth}`);
+	}
+
+	return agent.send(body);
+};
+
+const createUser = async (
+	body = {
+		username: 'user',
+		email: 'user@testing.com',
+		password: 'P4ssw0rd',
+	}
+) => {
+	if (typeof body.password === 'string') {
+		const hash = await bcrypt.hash(body.password, 10);
+		body.password = hash;
+	}
+
+	return prisma.user.create({ data: body });
+};
+
+const deleteNote = (id: number = 1, options: RequestOptions = {}) => {
+	const agent = request(app).delete(`/api/notes/${id}`);
+
+	if ('auth' in options) {
+		agent.set('Authorization', `Bearer ${options.auth}`);
+	}
 
-// 	return prisma.user.create({ data: body });
-// };
+	if ('language' in options) {
+		agent.set('Accept-Language', options.language as string);
+	}
 
-// const createColor = (body = { name: 'white', hex: '#fffffff' }) =>
-// 	prisma.color.create({ data: body });
+	return agent.send();
+};
 
-// const deleteNote = (id: number = 1, options: RequestOptions = {}) => {
-// 	const agent = request(app).delete(`/api/notes/${id}`);
+const VALID_CREDENTIALS = {
+	email: 'user@testing.com',
+	password: 'P4ssw0rd',
+};
 
-// 	if ('auth' in options) {
-// 		agent.set('Authorization', `Bearer ${options.auth}`);
-// 	}
+const CREATE_NOTE_BODY: CreateNoteInput = {
+	title: 'hello',
+	content: 'bye',
+	color: 'white',
+};
 
-// 	if ('language' in options) {
-// 		agent.set('Accept-Language', options.language as string);
-// 	}
+describe('Delete Note', () => {
+	describe('Failing cases', () => {
+		it('should return status 401 on delete note request without accessToken', async () => {
+			const response = await deleteNote();
 
-// 	return agent.send();
-// };
+			expect(response.status).toBe(401);
+		});
 
-// const VALID_CREDENTIALS = {
-// 	email: 'user@testing.com',
-// 	password: 'P4ssw0rd',
-// };
+		it('should return status 401 on delete note request with invalid accessToken', async () => {
+			const response = await deleteNote(1, {
+				auth: 'invalid-token',
+			});
 
-// const CREATE_NOTE_BODY = {
-// 	title: 'hello',
-// 	content: 'bye',
-// 	colorId: 1,
-// };
+			expect(response.status).toBe(401);
+		});
 
-// describe('Delete Note', () => {
-// 	describe('Failing cases', () => {
-// 		it('should return status 401 on delete note request without accessToken', async () => {
-// 			const response = await deleteNote();
+		it('should return status 404 on delete note request with invalid user', async () => {
+			const secret = process.env.ACCESS_TOKEN_SECRET!;
 
-// 			expect(response.status).toBe(401);
-// 		});
+			const payload = {
+				user: {
+					id: 5,
+				},
+			};
 
-// 		it('should return status 403 on delete note request with invalid accessToken', async () => {
-// 			const response = await deleteNote(1, {
-// 				auth: 'invalid-token',
-// 			});
+			const signOptions = {
+				expiresIn: '1m',
+			};
 
-// 			expect(response.status).toBe(403);
-// 		});
+			const accessToken = jwt.sign(payload, secret, signOptions);
 
-// 		it('should return status 404 on delete note request with invalid user', async () => {
-// 			const secret = process.env.ACCESS_TOKEN_SECRET!;
+			const response = await deleteNote(1, {
+				auth: accessToken,
+			});
 
-// 			const payload = {
-// 				user: {
-// 					id: 5,
-// 				},
-// 			};
+			expect(response.status).toBe(404);
+		});
 
-// 			const signOptions = {
-// 				expiresIn: '1m',
-// 			};
+		it('should return status 404 on delete note request with invalid note', async () => {
+			await createUser();
 
-// 			const accessToken = jwt.sign(payload, secret, signOptions);
+			const loginResponse = await login(VALID_CREDENTIALS);
 
-// 			const response = await deleteNote(1, {
-// 				auth: accessToken,
-// 			});
+			const accessToken = loginResponse.body.accessToken;
 
-// 			expect(response.status).toBe(404);
-// 		});
+			const response = await deleteNote(1, {
+				auth: accessToken,
+			});
 
-// 		it('should return message Note not found on delete note request with invalid user', async () => {
-// 			const secret = process.env.ACCESS_TOKEN_SECRET!;
+			expect(response.status).toBe(404);
+		});
 
-// 			const payload = {
-// 				user: {
-// 					id: 5,
-// 				},
-// 			};
+		it('should return message User not found on delete note request with invalid user', async () => {
+			const secret = process.env.ACCESS_TOKEN_SECRET!;
 
-// 			const signOptions = {
-// 				expiresIn: '1m',
-// 			};
+			const payload = {
+				user: {
+					id: 5,
+				},
+			};
 
-// 			const accessToken = jwt.sign(payload, secret, signOptions);
+			const signOptions = {
+				expiresIn: '1m',
+			};
 
-// 			const response = await deleteNote(1, {
-// 				auth: accessToken,
-// 			});
+			const accessToken = jwt.sign(payload, secret, signOptions);
 
-// 			expect(response.body.errorMessage).toBe(en.note.not_found);
-// 		});
+			const response = await deleteNote(1, {
+				auth: accessToken,
+			});
 
-// 		it('should return status 404 on delete note request with invalid note', async () => {
-// 			await createUser();
+			expect(response.body.errorMessage).toBe(en.user.not_found);
+		});
 
-// 			const loginResponse = await login(VALID_CREDENTIALS);
+		it('should return message Note not found on delete note request with invalid note', async () => {
+			await createUser();
 
-// 			const accessToken = loginResponse.body.accessToken;
+			const loginResponse = await login(VALID_CREDENTIALS);
 
-// 			const response = await deleteNote(1, {
-// 				auth: accessToken,
-// 			});
+			const accessToken = loginResponse.body.accessToken;
 
-// 			expect(response.status).toBe(404);
-// 		});
+			const response = await deleteNote(1, {
+				auth: accessToken,
+			});
 
-// 		it('should return message Note not found on delete note request with invalid note', async () => {
-// 			await createUser();
+			expect(response.body.errorMessage).toBe(en.note.not_found);
+		});
 
-// 			const loginResponse = await login(VALID_CREDENTIALS);
+		it('should return 403 when user is not author of the note', async () => {
+			await createUser();
 
-// 			const accessToken = loginResponse.body.accessToken;
+			const loginResponse = await login(VALID_CREDENTIALS);
 
-// 			const response = await deleteNote(1, {
-// 				auth: accessToken,
-// 			});
+			const accessToken = loginResponse.body.accessToken;
 
-// 			expect(response.body.errorMessage).toBe(en.note.not_found);
-// 		});
-// 	});
+			await createNote(CREATE_NOTE_BODY, {
+				auth: accessToken,
+			});
 
-// 	describe('Success Cases', () => {
-// 		it('should return status 200 on delete note request success', async () => {
-// 			await createUser();
+			await createUser({
+				...VALID_CREDENTIALS,
+				username: 'user2',
+				email: 'user2@example.com',
+			});
 
-// 			const loginResponse = await login(VALID_CREDENTIALS);
+			const secondLoginResponse = await login({
+				...VALID_CREDENTIALS,
+				email: 'user2@example.com',
+			});
 
-// 			const accessToken = loginResponse.body.accessToken;
+			const secondAccessToken = secondLoginResponse.body.accessToken;
 
-// 			const color = await createColor();
+			const response = await deleteNote(1, {
+				auth: secondAccessToken,
+			});
 
-// 			const cratedNote = await createNote(
-// 				{ ...CREATE_NOTE_BODY, colorId: color.id },
-// 				{
-// 					auth: accessToken,
-// 				}
-// 			);
+			expect(response.status).toBe(403);
+		});
+	});
 
-// 			const response = await deleteNote(cratedNote.body.id, {
-// 				auth: accessToken,
-// 			});
+	describe('Success Cases', () => {
+		it('should return status 200 on delete note request success', async () => {
+			await createUser();
 
-// 			expect(response.status).toBe(200);
-// 		});
+			const loginResponse = await login(VALID_CREDENTIALS);
 
-// 		it('should return message Note deleted successfully on delete note request success', async () => {
-// 			await createUser();
+			const accessToken = loginResponse.body.accessToken;
 
-// 			const loginResponse = await login(VALID_CREDENTIALS);
+			const cratedNote = await createNote(CREATE_NOTE_BODY, {
+				auth: accessToken,
+			});
 
-// 			const accessToken = loginResponse.body.accessToken;
+			const response = await deleteNote(cratedNote.body.id, {
+				auth: accessToken,
+			});
 
-// 			const color = await createColor();
+			expect(response.status).toBe(200);
+		});
 
-// 			const cratedNote = await createNote(
-// 				{ ...CREATE_NOTE_BODY, colorId: color.id },
-// 				{
-// 					auth: accessToken,
-// 				}
-// 			);
+		it('should return note body on delete note request success', async () => {
+			await createUser();
 
-// 			const response = await deleteNote(cratedNote.body.id, {
-// 				auth: accessToken,
-// 			});
+			const loginResponse = await login(VALID_CREDENTIALS);
 
-// 			expect(response.body.message).toBe(en.note.delete);
-// 		});
+			const accessToken = loginResponse.body.accessToken;
 
-// 		it('should delete note on delete note request success', async () => {
-// 			await createUser();
+			const cratedNote = await createNote(CREATE_NOTE_BODY, {
+				auth: accessToken,
+			});
 
-// 			const loginResponse = await login(VALID_CREDENTIALS);
+			const response = await deleteNote(cratedNote.body.id, {
+				auth: accessToken,
+			});
 
-// 			const accessToken = loginResponse.body.accessToken;
+			expect(response.body.title).toBe('hello');
+			expect(response.body.content).toBe('bye');
+			expect(response.body.color).toBe('white');
+			expect(response.body.id).toBe(1);
+		});
 
-// 			const color = await createColor();
+		it('should delete note on delete note request success', async () => {
+			await createUser();
 
-// 			const cratedNote = await createNote(
-// 				{ ...CREATE_NOTE_BODY, colorId: color.id },
-// 				{
-// 					auth: accessToken,
-// 				}
-// 			);
+			const loginResponse = await login(VALID_CREDENTIALS);
 
-// 			await deleteNote(cratedNote.body.id, {
-// 				auth: accessToken,
-// 			});
+			const accessToken = loginResponse.body.accessToken;
 
-// 			const note = await prisma.note.findUnique({
-// 				where: { id: cratedNote.body.id },
-// 			});
+			const cratedNote = await createNote(CREATE_NOTE_BODY, {
+				auth: accessToken,
+			});
 
-// 			expect(note).toBeNull();
-// 		});
-// 	});
+			await deleteNote(cratedNote.body.id, {
+				auth: accessToken,
+			});
 
-// 	describe('Internationalization', () => {
-// 		it('should return message Note not found on delete note request with invalid user', async () => {
-// 			const secret = process.env.ACCESS_TOKEN_SECRET!;
+			const note = await prisma.note.findUnique({
+				where: { id: cratedNote.body.id },
+			});
 
-// 			const payload = {
-// 				user: {
-// 					id: 5,
-// 				},
-// 			};
+			expect(note).toBeNull();
+		});
+	});
 
-// 			const signOptions = {
-// 				expiresIn: '1m',
-// 			};
+	describe('Internationalization', () => {
+		it('should return message User not found on delete note request with invalid user', async () => {
+			const secret = process.env.ACCESS_TOKEN_SECRET!;
 
-// 			const accessToken = jwt.sign(payload, secret, signOptions);
+			const payload = {
+				user: {
+					id: 5,
+				},
+			};
 
-// 			const response = await deleteNote(1, {
-// 				auth: accessToken,
-// 				language: 'es',
-// 			});
+			const signOptions = {
+				expiresIn: '1m',
+			};
 
-// 			expect(response.body.errorMessage).toBe(es.note.not_found);
-// 		});
+			const accessToken = jwt.sign(payload, secret, signOptions);
 
-// 		it('should return message Note not found on delete note request with invalid note', async () => {
-// 			await createUser();
+			const response = await deleteNote(1, {
+				auth: accessToken,
+				language: 'es',
+			});
 
-// 			const loginResponse = await login(VALID_CREDENTIALS);
+			expect(response.body.errorMessage).toBe(es.user.not_found);
+		});
 
-// 			const accessToken = loginResponse.body.accessToken;
+		it('should return message Note not found on delete note request with invalid note', async () => {
+			await createUser();
 
-// 			const response = await deleteNote(1, {
-// 				auth: accessToken,
-// 				language: 'es',
-// 			});
+			const loginResponse = await login(VALID_CREDENTIALS);
 
-// 			expect(response.body.errorMessage).toBe(es.note.not_found);
-// 		});
+			const accessToken = loginResponse.body.accessToken;
 
-// 		it('should return message Note deleted successfully on delete note request success', async () => {
-// 			await createUser();
+			const response = await deleteNote(1, {
+				auth: accessToken,
+				language: 'es',
+			});
 
-// 			const loginResponse = await login(VALID_CREDENTIALS);
-
-// 			const accessToken = loginResponse.body.accessToken;
-
-// 			const color = await createColor();
-
-// 			const cratedNote = await createNote(
-// 				{ ...CREATE_NOTE_BODY, colorId: color.id },
-// 				{
-// 					auth: accessToken,
-// 				}
-// 			);
-
-// 			const response = await deleteNote(cratedNote.body.id, {
-// 				auth: accessToken,
-// 				language: 'es',
-// 			});
-
-// 			expect(response.body.message).toBe(es.note.delete);
-// 		});
-// 	});
-// });
+			expect(response.body.errorMessage).toBe(es.note.not_found);
+		});
+	});
+});

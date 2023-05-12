@@ -39,7 +39,9 @@ export const updateNote = async (
 		throw new NotFound(req.t('note.not_found'));
 	}
 
-	if (note.authorId !== Number(userId)) return res.status(401).send();
+	if (note.authorId !== Number(userId)) {
+		return res.status(403).send();
+	}
 
 	const updatedNote = await notesService.updateNote(note.id, req.body);
 
@@ -53,9 +55,15 @@ export const deleteNote = async (
 	const userId = req.user;
 	const { id } = req.params;
 
-	const note = await notesService.findById(Number(userId));
+	const note = await notesService.findById(Number(id));
 
-	if (!note) throw new NotFound(req.t('note.not_found'));
+	if (!note) {
+		throw new NotFound(req.t('note.not_found'));
+	}
+
+	if (note.authorId !== Number(userId)) {
+		return res.status(403).send();
+	}
 
 	const deletedNote = await notesService.deleteNote(Number(id));
 
