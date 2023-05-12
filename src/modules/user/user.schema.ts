@@ -19,7 +19,7 @@ export const userSchema = z.object({
 	password: z
 		.string({
 			required_error: 'validation.password.required',
-			invalid_type_error: 'validation.email.type',
+			invalid_type_error: 'validation.password.type',
 		})
 		.regex(
 			/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%])/,
@@ -53,13 +53,13 @@ export const createUserSchema = userSchema.pick({
 export const loginSchema = z.object({
 	email: z
 		.string({
-			required_error: 'Email is required',
-			invalid_type_error: 'Email must be a string',
+			required_error: 'validation.email.required',
+			invalid_type_error: 'validation.email.type',
 		})
-		.email(),
+		.email('validation.email.invalid'),
 	password: z.string({
-		required_error: 'Email is required',
-		invalid_type_error: 'Email must be a string',
+		required_error: 'validation.password.required',
+		invalid_type_error: 'validation.password.type',
 	}),
 });
 
