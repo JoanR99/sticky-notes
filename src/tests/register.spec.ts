@@ -4,6 +4,7 @@ import app from '../app';
 import { prisma } from '../../prisma';
 import en from '../locales/en/translation.json';
 import es from '../locales/es/translation.json';
+import { VALID_CREDENTIALS } from './utils';
 
 type RequestOptions = {
 	language?: string;
@@ -19,10 +20,10 @@ const register = (credentials = {}, options: RequestOptions = {}) => {
 	return agent.send(credentials);
 };
 
-const VALID_CREDENTIALS = {
+const CREDENTIALS = {
+	...VALID_CREDENTIALS,
 	username: 'user',
-	email: 'user@testing.com',
-	password: 'P@ssw0rd',
+	password: '#P4ssw0rd',
 };
 
 describe('Register', () => {
@@ -41,7 +42,7 @@ describe('Register', () => {
 		`(
 			'should return status 400 on register request $failCase',
 			async ({ field }) => {
-				const credentials = { ...VALID_CREDENTIALS, [field]: undefined };
+				const credentials = { ...CREDENTIALS, [field]: undefined };
 
 				const response = await register(credentials);
 
@@ -67,7 +68,7 @@ describe('Register', () => {
 		`(
 			'should return error message on register request $failCase',
 			async ({ field, message }) => {
-				const credentials = { ...VALID_CREDENTIALS, [field]: undefined };
+				const credentials = { ...CREDENTIALS, [field]: undefined };
 
 				const response = await register(credentials);
 
@@ -77,7 +78,7 @@ describe('Register', () => {
 
 		it('should return status 400 on register request with malformed email', async () => {
 			const response = await register({
-				...VALID_CREDENTIALS,
+				...CREDENTIALS,
 				email: 'user@',
 			});
 
@@ -86,7 +87,7 @@ describe('Register', () => {
 
 		it('should return error message on register request with malformed email', async () => {
 			const response = await register({
-				...VALID_CREDENTIALS,
+				...CREDENTIALS,
 				email: 'user@',
 			});
 
@@ -105,7 +106,7 @@ describe('Register', () => {
 			'should return status 400 on register request with password $failCase',
 			async ({ password }) => {
 				const response = await register({
-					...VALID_CREDENTIALS,
+					...CREDENTIALS,
 					password,
 				});
 
@@ -125,7 +126,7 @@ describe('Register', () => {
 			'should return $message message on register request with password $failCase',
 			async ({ password, message }) => {
 				const response = await register({
-					...VALID_CREDENTIALS,
+					...CREDENTIALS,
 					password,
 				});
 
@@ -141,7 +142,7 @@ describe('Register', () => {
 			'should return 400 status when username $failCase',
 			async ({ username }) => {
 				const response = await register({
-					...VALID_CREDENTIALS,
+					...CREDENTIALS,
 					username,
 				});
 
@@ -157,7 +158,7 @@ describe('Register', () => {
 			'should return $message message when username $failCase',
 			async ({ username, message }) => {
 				const response = await register({
-					...VALID_CREDENTIALS,
+					...CREDENTIALS,
 					username,
 				});
 
@@ -168,19 +169,19 @@ describe('Register', () => {
 
 	describe('Success cases', () => {
 		it('should return status 201 on valid register request', async () => {
-			const response = await register(VALID_CREDENTIALS);
+			const response = await register(CREDENTIALS);
 
 			expect(response.status).toBe(201);
 		});
 
 		it('should return success message on valid register request', async () => {
-			const response = await register(VALID_CREDENTIALS);
+			const response = await register(CREDENTIALS);
 
 			expect(response.body.message).toBe(en.user.create);
 		});
 
 		it('should save user in database on valid register request', async () => {
-			await register(VALID_CREDENTIALS);
+			await register(CREDENTIALS);
 
 			const userList = await prisma.user.findMany();
 
@@ -188,20 +189,20 @@ describe('Register', () => {
 		});
 
 		it('should save username and email in database on valid register request', async () => {
-			await register(VALID_CREDENTIALS);
+			await register(CREDENTIALS);
 
 			const userList = await prisma.user.findMany();
 
-			expect(userList[0].username).toBe(VALID_CREDENTIALS.username);
-			expect(userList[0].email).toBe(VALID_CREDENTIALS.email);
+			expect(userList[0].username).toBe(CREDENTIALS.username);
+			expect(userList[0].email).toBe(CREDENTIALS.email);
 		});
 
 		it('should hash the password in the database', async () => {
-			await register(VALID_CREDENTIALS);
+			await register(CREDENTIALS);
 
 			const userList = await prisma.user.findMany();
 
-			expect(userList[0].username).not.toBe(VALID_CREDENTIALS.password);
+			expect(userList[0].username).not.toBe(CREDENTIALS.password);
 		});
 	});
 
@@ -224,7 +225,7 @@ describe('Register', () => {
 		`(
 			'should return error message on register request $failCase',
 			async ({ field, message }) => {
-				const credentials = { ...VALID_CREDENTIALS, [field]: undefined };
+				const credentials = { ...CREDENTIALS, [field]: undefined };
 
 				const response = await register(credentials, { language: 'es' });
 
@@ -235,7 +236,7 @@ describe('Register', () => {
 		it('should return error message on register request with malformed email', async () => {
 			const response = await register(
 				{
-					...VALID_CREDENTIALS,
+					...CREDENTIALS,
 					email: 'user@',
 				},
 				{ language: 'es' }
@@ -257,7 +258,7 @@ describe('Register', () => {
 			async ({ password, message }) => {
 				const response = await register(
 					{
-						...VALID_CREDENTIALS,
+						...CREDENTIALS,
 						password,
 					},
 					{ language: 'es' }
@@ -276,7 +277,7 @@ describe('Register', () => {
 			async ({ username, message }) => {
 				const response = await register(
 					{
-						...VALID_CREDENTIALS,
+						...CREDENTIALS,
 						username,
 					},
 					{ language: 'es' }
@@ -287,7 +288,7 @@ describe('Register', () => {
 		);
 
 		it('should return success message on valid register request', async () => {
-			const response = await register(VALID_CREDENTIALS, { language: 'es' });
+			const response = await register(CREDENTIALS, { language: 'es' });
 
 			expect(response.body.message).toBe(es.user.create);
 		});

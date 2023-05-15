@@ -1,18 +1,13 @@
 import request from 'supertest';
-import bcrypt from 'bcrypt';
 
 import app from '../app';
 import { prisma } from '../../prisma';
 import en from '../locales/en/translation.json';
 import es from '../locales/es/translation.json';
+import { VALID_CREDENTIALS, createUser } from './utils';
 
 type RequestOptions = {
 	language?: string;
-};
-
-const VALID_CREDENTIALS = {
-	email: 'user@testing.com',
-	password: 'P4ssw0rd',
 };
 
 const login = (credentials = {}, options: RequestOptions = {}) => {
@@ -23,13 +18,6 @@ const login = (credentials = {}, options: RequestOptions = {}) => {
 	}
 
 	return agent.send(credentials);
-};
-
-const createUser = async (
-	credentials = { ...VALID_CREDENTIALS, username: 'user' }
-) => {
-	credentials.password = await bcrypt.hash(credentials.password, 10);
-	return prisma.user.create({ data: credentials });
 };
 
 describe('Login', () => {

@@ -1,48 +1,22 @@
 import request from 'supertest';
-import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 import app from '../app';
 import { prisma } from '../../prisma';
 import en from '../locales/en/translation.json';
 import es from '../locales/es/translation.json';
-import { CreateNoteInput } from '../modules/note/note.schema';
+import {
+	CREATE_NOTE_BODY,
+	VALID_CREDENTIALS,
+	createNote,
+	createUser,
+	login,
+} from './utils';
 
 type RequestOptions = {
 	auth?: string;
 	isArchive?: boolean;
 	language?: string;
-};
-
-const login = (credentials = {}) =>
-	request(app).post('/api/users/login').send(credentials);
-
-const createNote = (
-	body: Partial<CreateNoteInput> = {},
-	options: RequestOptions = {}
-) => {
-	const agent = request(app).post('/api/notes');
-
-	if ('auth' in options) {
-		agent.set('Authorization', `Bearer ${options.auth}`);
-	}
-
-	return agent.send(body);
-};
-
-const createUser = async (
-	body = {
-		username: 'user',
-		email: 'user@testing.com',
-		password: 'P4ssw0rd',
-	}
-) => {
-	if (typeof body.password === 'string') {
-		const hash = await bcrypt.hash(body.password, 10);
-		body.password = hash;
-	}
-
-	return prisma.user.create({ data: body });
 };
 
 const updateNote = (
@@ -61,17 +35,6 @@ const updateNote = (
 	}
 
 	return agent.send(body);
-};
-
-const VALID_CREDENTIALS = {
-	email: 'user@testing.com',
-	password: 'P4ssw0rd',
-};
-
-const CREATE_NOTE_BODY: CreateNoteInput = {
-	title: 'hello',
-	content: 'bye',
-	color: 'white',
 };
 
 describe('Update Note', () => {

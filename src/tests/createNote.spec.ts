@@ -1,18 +1,20 @@
 import request from 'supertest';
-import bcrypt from 'bcrypt';
 
 import app from '../app';
 import { prisma } from '../../prisma';
 import en from '../locales/en/translation.json';
 import es from '../locales/es/translation.json';
+import {
+	CREATE_NOTE_BODY,
+	VALID_CREDENTIALS,
+	createUser,
+	login,
+} from './utils';
 
 type RequestOptions = {
 	auth?: string;
 	language?: string;
 };
-
-const login = (credentials = {}) =>
-	request(app).post('/api/users/login').send(credentials);
 
 const createNote = (body = {}, options: RequestOptions = {}) => {
 	const agent = request(app).post('/api/notes');
@@ -26,31 +28,6 @@ const createNote = (body = {}, options: RequestOptions = {}) => {
 	}
 
 	return agent.send(body);
-};
-
-const createUser = async (
-	body = {
-		username: 'user',
-		...VALID_CREDENTIALS,
-	}
-) => {
-	if (typeof body.password === 'string') {
-		const hash = await bcrypt.hash(body.password, 10);
-		body.password = hash;
-	}
-
-	return prisma.user.create({ data: body });
-};
-
-const VALID_CREDENTIALS = {
-	email: 'user@testing.com',
-	password: 'P4ssw0rd',
-};
-
-const CREATE_NOTE_BODY = {
-	title: 'hello',
-	content: 'bye',
-	color: 'white',
 };
 
 describe('Create Note', () => {
